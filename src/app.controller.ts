@@ -35,8 +35,6 @@ export class AppController {
 
     const triggers = ReduceTiggerResJson();
 
-    console.log(AgentToFlowJSON.agent);
-
     const agentDescription = AgentToFlowJSON.agent.description;
 
     const content = `You are an agent responsible for creating workflows that don't have any knowledge about ability and trigger other than the provided one.
@@ -99,14 +97,18 @@ export class AppController {
                 type: Type.STRING,
               },
               target_id: {
-                type: Type.OBJECT,
-                properties: {
-                  id: {
-                    type: Type.STRING,
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    id: {
+                      type: Type.STRING,
+                    },
+                    label: {
+                      type: Type.STRING,
+                    },
                   },
-                  label: {
-                    type: Type.STRING,
-                  },
+                  required: ['id'],
                 },
               },
               step_no: {
@@ -122,14 +124,16 @@ export class AppController {
                 type: Type.STRING,
               },
             },
+            required: ['id', 'type', 'step_no', 'target_id'],
           },
         },
       },
     });
 
-    res
-      .status(HttpStatus.CREATED)
-      .json({ data: JSON.parse(response.text as string) });
+    const data = response.text ? JSON.parse(response.text) : '';
+    console.log(data);
+
+    res.status(HttpStatus.CREATED).json({ data: data });
 
     return [];
   }
