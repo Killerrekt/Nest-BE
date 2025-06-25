@@ -1,0 +1,1107 @@
+export function ReduceAbilityResJson() {
+  const connectors = {
+    abilities: [
+      {
+        id: '0ef10030fa0d41a6a07a26748c52055e',
+        title: 'Add Content to a Page',
+        description:
+          'This action adds content to an existing page within your Notion workspace.',
+        type: 'action',
+        connector_id: '379b46e84a94461abf2be0c3470a1412',
+        group_name: 'notion',
+      },
+      {
+        id: 'ca7bc5ca185640118e079c5d9c79aef6',
+        title: 'Add Items to a Release',
+        description: 'This action adds items to a release.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'cb8c76a28c2d49b684a719e1f39dd0ca',
+        title: 'agent malli',
+        description: '',
+        type: 'agent',
+      },
+      {
+        id: 'a2da009195dc4dc686af7e19e7af1101',
+        title: 'Assign/Reassign a Branch Alias',
+        description:
+          'This action assigns/reassigns an existing/new alias to a branch in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '59669bc4bad04aa28832b0b705f3b4ea',
+        title: 'Classify Content',
+        description:
+          'This action scrapes your website to extract and store key content in Lytics.',
+        type: 'action',
+        connector_id: '372155231b894dc6b9057675234e5c26',
+        group_name: 'lytics',
+      },
+      {
+        id: '65bb01884dfd40ea96b0e97ffabcb863',
+        title: 'Clone a Release',
+        description: 'This action creates a duplicate of a release.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'e74a0ae3ad00403494fca30bf2779150',
+        title: 'Create a Branch',
+        description: 'This action creates a new branch in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '55adda7709424376aa19c711398d20f9',
+        title: 'Create a New Object',
+        description: 'This action creates a new object in AWS S3.',
+        type: 'action',
+        connector_id: 'b97b85f037bc4a5a97bd8db653551604',
+        group_name: 's3',
+      },
+      {
+        id: 'f590cc2c9c3f40ffa9e508493d34cd08',
+        title: 'Create a Page',
+        description:
+          'This action creates a new page within an existing parent page/database in your Notion workspace.',
+        type: 'action',
+        connector_id: '379b46e84a94461abf2be0c3470a1412',
+        group_name: 'notion',
+      },
+      {
+        id: 'c94f631f5f6145c6bb4af4756cb3a1a5',
+        title: 'Create a Release',
+        description: 'This action creates a new empty release.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '0cd6d44df6a1488ba62c9378afbc2f58',
+        title: 'Create a Task',
+        description: 'This action creates a task in your Asana project.',
+        type: 'action',
+        connector_id: '4416989127a04c63a674af59f2105cc9',
+        group_name: 'asana',
+      },
+      {
+        id: '35bc055651f04fd8bc88377165ec4fd1',
+        title: 'Create a Voice Profile',
+        description:
+          'This action creates a new Voice Profile in a specific Brand Kit.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: 'c6e6da6a95ff4f208e8be43492c3caf9',
+        title: 'Create an Asset',
+        description: 'This action creates a new asset in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '40928fe61d8546ac8daa9686d76fd18c',
+        title: 'Create an Entry',
+        description: 'This action creates a new entry in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '59bc9cf8e2c6440db034657e3e31f063',
+        title: 'Create an Item in Knowledge Vault',
+        description: 'This action creates a new item in the Knowledge Vault.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: '9b3f308ae46f468da427af752d654db5',
+        title: 'Create or Upload a Blob',
+        description:
+          'This action lets you create or upload a blob in your Azure Blob Storage account.',
+        type: 'action',
+        connector_id: 'bb1188e3dcc3478bb6bf0af73839ffdd',
+        group_name: 'azureblobstorage',
+      },
+      {
+        id: '473d470f2c164b19934bbdfcce7a9242',
+        title: 'Create Record',
+        description: 'This action adds a record(s) in Airtable.',
+        type: 'action',
+        connector_id: '5846639fc1f041db9d982da5671e9b25',
+        group_name: 'airtable',
+      },
+      {
+        id: 'dfc0719970554fa89a7b86353a81aea0',
+        title: 'Delete a Branch',
+        description: 'This action deletes a branch in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '0e036b5fff834952a6d81e74518996ed',
+        title: 'Delete a Branch Alias',
+        description: 'This action deletes a branch alias from a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'aa68cbb4cf4c410a9056476199ce6d04',
+        title: 'Delete a Database',
+        description:
+          'This action deletes an existing database from your Notion workspace.',
+        type: 'action',
+        connector_id: '379b46e84a94461abf2be0c3470a1412',
+        group_name: 'notion',
+      },
+      {
+        id: 'aecc7853cca3486db111b34564c96d92',
+        title: 'Delete a Page',
+        description:
+          'This action deletes an existing page from your Notion workspace.',
+        type: 'action',
+        connector_id: '379b46e84a94461abf2be0c3470a1412',
+        group_name: 'notion',
+      },
+      {
+        id: 'bd8a541c1b864c10aa229c8e4d2f3ec6',
+        title: 'Delete a Record',
+        description: 'This action deletes a record in Airtable.',
+        type: 'action',
+        connector_id: '5846639fc1f041db9d982da5671e9b25',
+        group_name: 'airtable',
+      },
+      {
+        id: '30b1427bce5e415ebc5328977abc6da3',
+        title: 'Delete a Voice Profile',
+        description:
+          'This action deletes an existing Voice Profile from a specific Brand Kit.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: 'b61cc2e2b97240f596f2e4036a2d3ee2',
+        title: 'Delete an asset',
+        description: 'This action deletes an asset in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '505d71e73c034eef97e1b095c4d4ac4b',
+        title: 'Delete an Entry',
+        description: 'This action deletes an entry in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '67ca9693dced4145bffb482dc78b86b2',
+        title: 'Delete an Item from Knowledge Vault',
+        description: 'This action deletes an item from the Knowledge Vault.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: '0affca7201b145fbb1879d4a7473fdc8',
+        title: 'Delete an Object',
+        description: 'This action deletes an object in AWS S3.',
+        type: 'action',
+        connector_id: 'b97b85f037bc4a5a97bd8db653551604',
+        group_name: 's3',
+      },
+      {
+        id: '11fb410f09624d2d977fb418751f087d',
+        title: 'Delete Entries',
+        description: 'This action deletes records in the Algolia index.',
+        type: 'action',
+        connector_id: '96d3ed3f7e804e82bb225c0aaba0bf27',
+        group_name: 'algolia',
+      },
+      {
+        id: '4ec0b272b4094bb28f12620bc2aced07',
+        title: 'Delete Items from a Release',
+        description: 'This action removes items from a release.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'df9ef0782f0a4c438862281ba6b4aa13',
+        title: 'Deploy a Build',
+        description: 'This action triggers a deployment for a Launch project.',
+        type: 'action',
+        connector_id: '755fd598f80b4ed185869df8a777cddd',
+        group_name: 'launch',
+      },
+      {
+        id: '6001b926771042a68b3003670a7354fd',
+        title: 'Deploy a Release',
+        description: 'This action deploys a release in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '43a3a5d07fe446589fec3617f7c183ad',
+        title: 'Email By Automate',
+        description: 'This action sends an email by Automate.',
+        type: 'action',
+        connector_id: 'cf63b75b20a4471986350983b0b9d0b3',
+        group_name: 'email',
+      },
+      {
+        id: '165a0f7df3ce4ebc99da256809b3f0a0',
+        title: 'Enrich Content',
+        description:
+          'This action sends your content to Lytics to fetch inferred topics. ',
+        type: 'action',
+        connector_id: '372155231b894dc6b9057675234e5c26',
+        group_name: 'lytics',
+      },
+      {
+        id: '08007c82b7ce410f95c21d8105ab8622',
+        title: 'Export a Taxonomy',
+        description:
+          'This action exports a taxonomy, along with all its associated terms in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'cebd42fc196343d4b89b8256ae98345e',
+        title: 'Generative AI',
+        description:
+          'This action fetches the details generated by AI using the Voice Profiles and Knowledge Vault.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: '867927d6c2454c0fb22a6a58301f0fb7',
+        title: 'Get a Single Asset',
+        description:
+          'This action fetches the details of a single asset in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '0fc9d3d80f0c433498f703e36d0378fc',
+        title: 'Get a Single Asset',
+        description: 'This action fetches the details of a single asset.',
+        type: 'action',
+        connector_id: '4726912db9ee49f0bf0975172d3963b3',
+        group_name: 'contentstack_delivery',
+      },
+      {
+        id: '7d0383fbd6ab417c9735d9dcfd40b847',
+        title: 'Get a Single Audience',
+        description:
+          'This action fetches the details of a single audience from a Personalize project.',
+        type: 'action',
+        connector_id: '77f43372532d47c8ae027938af074a01',
+        group_name: 'personalize',
+      },
+      {
+        id: 'eb95d7b1083e4c5099140211bec690d9',
+        title: 'Get a Single Audience',
+        description:
+          'This action retrieves the details of a single audience from your Lytics account.',
+        type: 'action',
+        connector_id: '372155231b894dc6b9057675234e5c26',
+        group_name: 'lytics',
+      },
+      {
+        id: '0cb554eec5f04f21855ca9f2ce81d6d0',
+        title: 'Get a Single Branch',
+        description:
+          'This action fetches the details of a single branch in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '233d7f108aa04d4198ef836d8bd91958',
+        title: 'Get a Single Branch Alias',
+        description:
+          'This action fetches the details of a single branch alias from a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '3ed4f2c4be2b4b73a357060602f5d96e',
+        title: 'Get a Single Brand Kit',
+        description:
+          'This action fetches the details of a single Brand Kit in an organization.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: 'cff12b3e94df4dcbbc1090f8d083f817',
+        title: 'Get a Single Content Type',
+        description:
+          'This action fetches the details of a specific content type in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'd8b1b9d16c82488ba8cf48031a00d935',
+        title: 'Get a Single Entry',
+        description: 'This action fetches the details of a single entry.',
+        type: 'action',
+        connector_id: '4726912db9ee49f0bf0975172d3963b3',
+        group_name: 'contentstack_delivery',
+      },
+      {
+        id: 'ea9a15d22fc34f42a6c1d0ad38c2b69d',
+        title: 'Get a Single Experience',
+        description:
+          'This action fetches the details of a single experience from a Personalize project.',
+        type: 'action',
+        connector_id: '77f43372532d47c8ae027938af074a01',
+        group_name: 'personalize',
+      },
+      {
+        id: '6b3e254f548c4843bfb66bba04ff46d7',
+        title: 'Get a Single Global Field',
+        description:
+          'This action fetches the details of a specific global field in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'c042149f5e8d4927886587d6b5075ed7',
+        title: 'Get a Single Item in Knowledge Vault',
+        description:
+          'This action fetches the details of a single item in the Knowledge Vault.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: '97881b2e8f674307ba8433ef10f9d17a',
+        title: 'Get a Single Merge Job',
+        description:
+          'This action fetches the details of a single merge job in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'effc509800824678b04477549d46718c',
+        title: 'Get a Single Release',
+        description: 'This action gets the details of a single release.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '0f5c723ca63e4b578bf64477aade64ae',
+        title: 'Get a Single Taxonomy',
+        description: 'This action fetches the details of a single taxonomy.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '7d243fd0022a473c8ec06e132f6664e6',
+        title: 'Get a Single Variant',
+        description:
+          'This action fetches the details of a single variant in a Variant Group.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '12c9cf869ad74c4b997dc913efdf76b3',
+        title: 'Get a Single Voice Profile',
+        description:
+          'This action fetches the details of a single Voice Profile from a specific Brand Kit.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: 'ccc6538ea6a141b1954c8a9515f55838',
+        title: 'Get a User',
+        description:
+          'This action gets all the information of a single user from Asana project.',
+        type: 'action',
+        connector_id: '4416989127a04c63a674af59f2105cc9',
+        group_name: 'asana',
+      },
+      {
+        id: 'a8e4d7cb22104a60b3cabd3ad7a5a6e4',
+        title: 'Get a User Profile',
+        description:
+          'This action retrieves the details of a user from your Lytics account.',
+        type: 'action',
+        connector_id: '372155231b894dc6b9057675234e5c26',
+        group_name: 'lytics',
+      },
+      {
+        id: '9a5f9b715762461e82b41a8a6725629f',
+        title: 'Get All Assets',
+        description:
+          'This action fetches the details of all the assets in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '367d592eb92b44b98b5ba9b82116f541',
+        title: 'Get All Assets',
+        description:
+          'This action fetches the details of all the assets in a stack.',
+        type: 'action',
+        connector_id: '4726912db9ee49f0bf0975172d3963b3',
+        group_name: 'contentstack_delivery',
+      },
+      {
+        id: '1580d1bdea1a41d38594c49dd0a6bf25',
+        title: 'Get All Audiences',
+        description:
+          'This action fetches the details of all the audiences from a Personalize project.',
+        type: 'action',
+        connector_id: '77f43372532d47c8ae027938af074a01',
+        group_name: 'personalize',
+      },
+      {
+        id: '914ce98a33a148688e1cc34fb4136cad',
+        title: 'Get All Audiences',
+        description:
+          'This action retrieves the details of all audiences from your Lytics account.',
+        type: 'action',
+        connector_id: '372155231b894dc6b9057675234e5c26',
+        group_name: 'lytics',
+      },
+      {
+        id: '307498c4e8304440957ab3bd81eab396',
+        title: 'Get All Branch Aliases',
+        description:
+          ' This action fetches the details of all the branch aliases from a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '60983cede6044aa88b1ae57ca0be2465',
+        title: 'Get All Branches',
+        description:
+          'This action fetches the details of all the branches in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '1c122e9be48b4c4aa36f7fc68659b92f',
+        title: 'Get All Content Types',
+        description:
+          'This action fetches the details of all the content types in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'f819e401c4554f71850eeeccd26a8434',
+        title: 'Get All Descendants of a Term',
+        description:
+          'This action fetches the details of all the descendants of a term.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '50f4cd7d564842dba32d3cae2e67747d',
+        title: 'Get All Entries',
+        description:
+          'This action fetches the details of all the entries in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '4e187f6e841f42f6b18e538c91b501ed',
+        title: 'Get All Entries',
+        description:
+          'This action fetches the details of all the entries in a stack.',
+        type: 'action',
+        connector_id: '4726912db9ee49f0bf0975172d3963b3',
+        group_name: 'contentstack_delivery',
+      },
+      {
+        id: 'd5107a24794642f3b1586381f06f6b4d',
+        title: 'Get All Experiences',
+        description:
+          'This action fetches the details of all the experiences from a Personalize project.',
+        type: 'action',
+        connector_id: '77f43372532d47c8ae027938af074a01',
+        group_name: 'personalize',
+      },
+      {
+        id: 'c89875f646c443bd93696566ffc14f8b',
+        title: 'Get All Files',
+        description:
+          'This action fetches the details of all the files from your AWS S3 account.',
+        type: 'action',
+        connector_id: 'b97b85f037bc4a5a97bd8db653551604',
+        group_name: 's3',
+      },
+      {
+        id: '20b46244bd144e54bdd97759b409c381',
+        title: 'Get All Global Fields',
+        description:
+          'This action fetches the details of all the global fields in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'f5a5013607104faa984f812ab7d288f7',
+        title: 'Get All Items in a Release',
+        description:
+          'This action fetches the details of all the items in a release.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '619a365ccf86475caaaac57f3eb573af',
+        title: 'Get All Items in Knowledge Vault',
+        description:
+          'This action fetches the details of all the items in the Knowledge Vault.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: '0fa5c2fad90943c5aad9a6691a13d549',
+        title: 'Get All Languages',
+        description:
+          'This action fetches the details of all the languages created in a stack for localization.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '3dab4d14e984475f8fb4a4a2d33fc248',
+        title: 'Get All Releases',
+        description:
+          'This action gets the details of all the releases in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '9d05c83bf614459dada2aad444875794',
+        title: 'Get All Taxonomies',
+        description:
+          'This action fetches the details of all the taxonomies in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'cca4a343fa654330b50072deb07dbaf8',
+        title: 'Get All Variants of a Content Type',
+        description:
+          'This action fetches the details of all the variants associated with a specific content type.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '7a8fdfd558b9436d801a9d92efbe7f56',
+        title: 'Get All Variants of an Entry',
+        description:
+          'This action fetches the details of all the variants of a specific entry for the selected content type.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '16ae7d40b3a14714bc0fd7a8a045ff26',
+        title: 'Get All Versions',
+        description:
+          'This action fetches the details of all the versions of an experience from a Personalize project.',
+        type: 'action',
+        connector_id: '77f43372532d47c8ae027938af074a01',
+        group_name: 'personalize',
+      },
+      {
+        id: 'cc0bfe422a734b46b0ff5ee59b161a05',
+        title: 'Get All Voice Profiles',
+        description:
+          'This action fetches the details of all the Voice Profiles from a specific Brand Kit.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: '78406dbc992c4474ad3d2c4441dae71b',
+        title: 'Get Asset Reference',
+        description:
+          'This action fetches the details of all entries in which the selected asset is referenced',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '7f82f794847d4deaaec89d9cc646671a',
+        title: 'Get Audience(s) of a Variant',
+        description:
+          'This action fetches the details of all the audiences of a particular Variant.',
+        type: 'action',
+        connector_id: '77f43372532d47c8ae027938af074a01',
+        group_name: 'personalize',
+      },
+      {
+        id: '14e851a519ea4c178e8f1cccfcf9fe3c',
+        title: 'Get Content Topics',
+        description:
+          'This action retrieves all available content topics from your Lytics account.',
+        type: 'action',
+        connector_id: '372155231b894dc6b9057675234e5c26',
+        group_name: 'lytics',
+      },
+      {
+        id: '11a8c1d88ac941f7b8af14872acbe0f9',
+        title: 'Get Data Chunks from Knowledge Vault',
+        description:
+          'This action retrieves details of data chunks from the Knowledge Vault based on the provided search content.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: '54dddb3f59a243f5a7931f4cab38328c',
+        title: 'Get Field Information',
+        description:
+          'This action retrieves field details from a selected Lytics audience.',
+        type: 'action',
+        connector_id: '372155231b894dc6b9057675234e5c26',
+        group_name: 'lytics',
+      },
+      {
+        id: '764ba04faa2f4c2cb516dd6e036c1486',
+        title: 'Get File URL',
+        description:
+          'This action lets you fetch the URL of a file from your Box cloud drive.',
+        type: 'action',
+        connector_id: '360a302fafe54255963f4c05bc8b6ffc',
+        group_name: 'box',
+      },
+      {
+        id: 'be39416c824144888263807d3182d584',
+        title: 'Get Page Details',
+        description:
+          'This action fetches the details of a page from your Notion workspace.',
+        type: 'action',
+        connector_id: '379b46e84a94461abf2be0c3470a1412',
+        group_name: 'notion',
+      },
+      {
+        id: 'e79a6b4756fe4391a0a22ed3bb23a92a',
+        title: 'Get Product Details',
+        description:
+          'This action gets product details from your BigCommerce store.',
+        type: 'action',
+        connector_id: 'c22617fa5fb44648959c962f73af7ef8',
+        group_name: 'bigcommerce',
+      },
+      {
+        id: 'f6871616cf1c47f5a37ef0f8cd8b335f',
+        title: 'Get Publish Queue',
+        description:
+          'This action fetches the details of all the published and unpublished entries in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '6ee22906a323484c872c104c30ef6498',
+        title: 'Get Records',
+        description: 'This action fetches the details of multiple records.',
+        type: 'action',
+        connector_id: '5846639fc1f041db9d982da5671e9b25',
+        group_name: 'airtable',
+      },
+      {
+        id: '441190e4fea34964a77bb6c8018dd188',
+        title: 'Get Single Entry',
+        description: 'This action gets details of a single entry.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '3f2eda75f0bc48fea12ebddd30f414ea',
+        title: 'Get Single Entry Variant',
+        description:
+          'Fetches a single variant of an entry with detailed options.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '96978ef25bb14fac949bac67f4d962bb',
+        title: 'Get Single Record',
+        description: 'This action fetches the details of a single record.',
+        type: 'action',
+        connector_id: '5846639fc1f041db9d982da5671e9b25',
+        group_name: 'airtable',
+      },
+      {
+        id: 'ee2bb4c6d8d6456ab894cdded93ea940',
+        title: 'Get Tasks from Project',
+        description: 'This action gets the tasks from Asana project.',
+        type: 'action',
+        connector_id: '4416989127a04c63a674af59f2105cc9',
+        group_name: 'asana',
+      },
+      {
+        id: 'c7673813d7ab478ba654604304bf418b',
+        title: 'Get User Information',
+        description: 'This action gets the details of a user.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '9a5cecece1ef447fac67b1062fdad6b7',
+        title: 'Import a Taxonomy',
+        description:
+          'This action imports a taxonomy, along with all its associated terms in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '35dee47119474d6a9359f7e816f0a6ac',
+        title: 'Index an Entry',
+        description: 'This action creates an entry in a specific index.',
+        type: 'action',
+        connector_id: 'cd062a5b56bf4b0f99949b43a598bc7b',
+        group_name: 'elasticsearch',
+      },
+      {
+        id: '2b7146445dce42f9a726a0072eac1ebe',
+        title: 'Index Entries',
+        description:
+          'This action adds or updates records in the Algolia index.',
+        type: 'action',
+        connector_id: '96d3ed3f7e804e82bb225c0aaba0bf27',
+        group_name: 'algolia',
+      },
+      {
+        id: 'c0326c5334bb493495d8067e7d85f33d',
+        title: 'Index Entry',
+        description:
+          'This action adds or updates a single record in the Algolia index.',
+        type: 'action',
+        connector_id: '96d3ed3f7e804e82bb225c0aaba0bf27',
+        group_name: 'algolia',
+      },
+      {
+        id: '7aba40019ff24f08afa3db22302122cf',
+        title: 'Localize an Entry',
+        description: 'This action localizes an entry in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '53934ba999b540758139ae2d711ff052',
+        title: 'Merge Branch',
+        description:
+          'This action merges the content types and global fields from compare (source) branch into base (target) branch.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'f91513abfd04489c9d6f0a8f4ac45dea',
+        title: 'Publish an Asset',
+        description: 'This action publishes an asset in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'e01bcc90ac944cd7b274b158c51e71a8',
+        title: 'Publish an Entry',
+        description: 'This action publishes a single entry in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '878ad06c73ec43429c6eb784595a9072',
+        title: 'Publish Variant(s) of an Entry',
+        description: 'This action publishes the variants of an entry.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '47aaf815b8ea4309af7ca218da28fe64',
+        title: 'Revalidate CDN cache',
+        description:
+          'This action revalidates cached data for an environment using a path',
+        type: 'action',
+        connector_id: '755fd598f80b4ed185869df8a777cddd',
+        group_name: 'launch',
+      },
+      {
+        id: 'b9a083ab44344b35a2f930194ed31561',
+        title: 'Run a Pipeline',
+        description:
+          'This action triggers the pipeline to run and perform the defined tasks.',
+        type: 'action',
+        connector_id: '08be3b3c133e415baf8369e9a0492f6e',
+        group_name: 'azuredevops',
+      },
+      {
+        id: '567b290d8c4440c89e60a1af02de58d8',
+        title: 'Send Email',
+        description: 'This action sends an email from a SendGrid account.',
+        type: 'action',
+        connector_id: '910f30476d334b69bea042fa975e8cb9',
+        group_name: 'sendgrid',
+      },
+      {
+        id: '585d8b05fc7e428e96825d55ba3215b0',
+        title: 'Send Email',
+        description: 'This action sends an email from a Mailgun account.',
+        type: 'action',
+        connector_id: 'ab49488866c746ff8a25fb9c32716577',
+        group_name: 'mailgun',
+      },
+      {
+        id: 'f2ed05bcea434d5aa6019ae0d638aba6',
+        title: 'Send Message',
+        description: 'This action sends a message to a Slack channel.',
+        type: 'action',
+        connector_id: 'f172c89580a4448795812a811eaec4e3',
+        group_name: 'slack',
+      },
+      {
+        id: '1d8e0a06e0ee4dbd8fa6ffd1c16a3fe9',
+        title: 'Send Message in Channel',
+        description: 'This action sends a message in your channel.',
+        type: 'action',
+        connector_id: '252ae58310a94d59aeea794968082fe4',
+        group_name: 'msteams',
+      },
+      {
+        id: '68b718f2041749c5be4c58e7dc405901',
+        title: 'Send Message in Chat',
+        description: 'This action sends a message in chat.',
+        type: 'action',
+        connector_id: '252ae58310a94d59aeea794968082fe4',
+        group_name: 'msteams',
+      },
+      {
+        id: '60932946f0c84fdf8bb43080141e1e4a',
+        title: 'Send Notification',
+        description: 'This action sends a message to AWS SNS topic.',
+        type: 'action',
+        connector_id: '8b25d2a4a3764b84b1b515d12ba11f2b',
+        group_name: 'sns',
+      },
+      {
+        id: '0c17428f69734b8ea6c62688b784603f',
+        title: 'Send SMS',
+        description: 'This action sends an SMS using the Twilio account.',
+        type: 'action',
+        connector_id: '604e0ab3f8cc4123a2cd7cecff2be673',
+        group_name: 'twilio',
+      },
+      {
+        id: '4a899477f27a48bcbdf01841caa23e2a',
+        title: 'Set Entry Workflow',
+        description: 'This action sets an entry workflow in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '53d7b98c42234ac1b5e7763c051534f6',
+        title: 'Trigger Deploy',
+        description:
+          'This action triggers the deployment of a project on Vercel.',
+        type: 'action',
+        connector_id: '6b5ae3eb44014933bb8616839bba5755',
+        group_name: 'vercel',
+      },
+      {
+        id: '6a4e764a79ec454d93c35e736733029c',
+        title: 'Unpublish an Entry',
+        description: 'This action unpublishes an entry in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '8db6a03d25c04130afc23139b7151b80',
+        title: 'Update a Record',
+        description: 'This action updates a record.',
+        type: 'action',
+        connector_id: '5846639fc1f041db9d982da5671e9b25',
+        group_name: 'airtable',
+      },
+      {
+        id: '237ee0849bde446ab9ffafb98d5029f3',
+        title: 'Update a Task',
+        description: 'This action updates a task in your Asana project.',
+        type: 'action',
+        connector_id: '4416989127a04c63a674af59f2105cc9',
+        group_name: 'asana',
+      },
+      {
+        id: 'cf69923b4e7f4604acf32ceb69abb129',
+        title: 'Update a Taxonomy',
+        description:
+          'This action updates the description and title of a taxonomy.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: 'dde42153ab4f46369e0a9e371763ed59',
+        title: 'Update a Term',
+        description: 'This action updates the title of a term.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '17916258915c4c8ebfd14361132dd044',
+        title: 'Update a Voice Profile',
+        description:
+          'This action updates an existing Voice Profile from a specific Brand Kit.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: '08299357cfa749a7b2b2e8e86fea1176',
+        title: 'Update an Asset',
+        description: 'This action updates a single asset in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '42bca1506dc24f13a2e0fc2021fc537b',
+        title: 'Update an Entry',
+        description: 'This action updates an entry in a stack.',
+        type: 'action',
+        connector_id: '438baf1d393345f2ab130f8372e4c464',
+        group_name: 'contentstack',
+      },
+      {
+        id: '562168991c3a4a158c2197d207d0de4b',
+        title: 'Update an Item in Knowledge Vault',
+        description:
+          'This action updates the details of an item in the Knowledge Vault.',
+        type: 'action',
+        connector_id: '0a50293d2540444bb7a03e7c7aa96495',
+        group_name: 'brandkit',
+      },
+      {
+        id: 'ef345981e5b448678587c12f3238ad9a',
+        title: 'Update Entries',
+        description: 'This action updates records in the Algolia index.',
+        type: 'action',
+        connector_id: '96d3ed3f7e804e82bb225c0aaba0bf27',
+        group_name: 'algolia',
+      },
+      {
+        id: 'ee0efb79e5ce487e89b263cb5ad15e61',
+        title: 'Update Metadata',
+        description: 'This action updates Cloudinary metadata.',
+        type: 'action',
+        connector_id: '750c34f7ff78412495e12b5ff886026c',
+        group_name: 'cloudinary',
+      },
+      {
+        id: 'f9f734beed4b48e997895290aa413834',
+        title: 'Web Search',
+        description:
+          'Allow models to search the web for the latest information before generating a response.',
+        type: 'action',
+        connector_id: '3d66e5920ef048e3b292865b1997072f',
+        group_name: 'chatgpt',
+      },
+    ],
+    count: 123,
+  };
+
+  const reducesize: any[] = [];
+
+  connectors.abilities.map((ele) => {
+    const temp = {
+      title: ele.title,
+      description: ele.description,
+      type: ele.type,
+    };
+    reducesize.push(temp);
+  });
+  return reducesize;
+}
+
+export function ReduceTiggerResJson() {
+  const temp: any[] = [];
+  const trigger = [
+    {
+      id: 'd457d353d94f424385fa51c83196e8de',
+      origin_id: '1839be436a644bb5bd36c9e9fd74b06c',
+      title: 'HTTP Request Trigger',
+      description:
+        'This event is triggered when HTTP GET/POST  requests are made to a webhook URL.',
+      auth: '',
+      type: 'instant',
+      connector_id: '77068a27c78c44ecb0ab428dc44ddf1b',
+      input_schema:
+        '{\n  "type": "object",\n  "required": [\n    "method"\n  ],\n  "properties": {\n    "method": {\n      "type": "string",\n      "title": "Select Method",\n      "minLength": 3,\n      "default": "GET/POST",\n      "enum": [\n        "GET/POST"\n      ],\n      "description": "Select a method."\n    }\n  }\n}',
+      group_name: 'http',
+      help: 'https://www.contentstack.com/docs/developers/automation-hub-connectors/http-trigger/',
+      version: 5,
+      published: true,
+      updated_at: '2023-06-22T07:11:05.703Z',
+      created_at: '2021-08-11T07:06:24.153Z',
+    },
+  ];
+  trigger.map((ele) =>
+    temp.push({
+      title: ele.title,
+      description: ele.description,
+      input_schema: ele.input_schema,
+    }),
+  );
+  return temp;
+}
+
+const abilitiesJson = ReduceAbilityResJson();
+
+const triggers = ReduceTiggerResJson();
