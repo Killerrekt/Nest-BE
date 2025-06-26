@@ -7,37 +7,80 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { AgentToFlowJSON, AppService } from './app.service';
-
+import { AppService } from './app.service';
+import { parseAgentInputSchema } from './parse-input-schema';
 import { Response } from 'express';
 import { GoogleGenAI, Type } from '@google/genai';
 import { ReduceAbilityResJson, ReduceTiggerResJson } from './json';
+import { FlowTransformationService } from './flow-transformation.service';
+import { ServiceStep, AgentConfig } from './type';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly flowTransformationService: FlowTransformationService,
+  ) {}
 
   @Get()
   getHello(): string {
     return this.appService.getHello();
   }
 
-  @Post()
+  @Post('test')
+  simpleTest(@Body() body: any): any {
+    console.log('Simple test endpoint hit');
+    console.log('Body received:', body);
+    return {
+      message: 'Test endpoint working',
+      body: body,
+      hasDescription: !!body?.description,
+    };
+  }
+
+    @Post()
   async getFlowJson(
-    @Body() AgentToFlowJSON: AgentToFlowJSON,
+    @Body() AgentToFlowJSON: any,
     @Res() res: Response,
   ): Promise<any> {
-    const ai = new GoogleGenAI({
-      apiKey: process.env.KEY,
-    });
+    try {
+      // Debug log to see what we're receiving
+      console.log('=== REQUEST DEBUG ===');
+      console.log('Received request body:', JSON.stringify(AgentToFlowJSON, null, 2));
+      console.log('Type of AgentToFlowJSON:', typeof AgentToFlowJSON);
+      console.log('AgentToFlowJSON exists:', !!AgentToFlowJSON);
 
-    const abilitiesJson = ReduceAbilityResJson();
+      // Validate request body
+      if (!AgentToFlowJSON) {
+        console.log('Request body is empty/undefined');
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          error: 'Invalid request body. Expected agent data is missing.',
+        });
+      }
 
-    const triggers = ReduceTiggerResJson();
+      if (!AgentToFlowJSON.description) {
+        console.log('Description is missing from request body');
+        console.log('Available keys:', Object.keys(AgentToFlowJSON || {}));
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          error: 'Agent description is required.',
+          receivedKeys: Object.keys(AgentToFlowJSON || {}),
+        });
+      }
 
-    const agentDescription = AgentToFlowJSON.agent.description;
+      const ai = new GoogleGenAI({
+        apiKey: process.env.KEY,
+      });
 
-    const content = `You are an agent responsible for creating workflows that don't have any knowledge about ability and trigger other than the provided one.
+      const abilitiesJson = ReduceAbilityResJson();
+      const triggers = ReduceTiggerResJson();
+      const agentDescription = AgentToFlowJSON.description;
+      const rawSchema = AgentToFlowJSON.input_schema;
+
+      const inputFields = parseAgentInputSchema(rawSchema);
+
+      console.log('Input fields:', JSON.stringify(inputFields, null, 2));
+
+      const content = `You are an agent responsible for creating workflows that don't have any knowledge about ability and trigger other than the provided one.
       The output returned should be an array that shows the step by step breakdown of the workflow. Try keeping the number of steps to a minimum.
       Each step should have the general format of 
       {
@@ -80,61 +123,72 @@ export class AppController {
       Here is a text :- ${agentDescription}. From this extract a basic workflow and create it based on the rules declared above.
     `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: content,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              id: {
-                type: Type.STRING,
-              },
-              type: {
-                type: Type.STRING,
-              },
-              target_id: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    id: {
-                      type: Type.STRING,
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: content,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                id: { type: Type.STRING },
+                type: { type: Type.STRING },
+                target_id: {
+                  type: Type.ARRAY,
+                  items: {
+                    type: Type.OBJECT,
+                    properties: {
+                      id: { type: Type.STRING },
+                      label: { type: Type.STRING },
                     },
-                    label: {
-                      type: Type.STRING,
-                    },
+                    required: ['id'],
                   },
-                  required: ['id'],
                 },
+                step_no: { type: Type.INTEGER },
+                condition: { type: Type.STRING },
+                title: { type: Type.STRING },
+                description: { type: Type.STRING },
               },
-              step_no: {
-                type: Type.INTEGER,
-              },
-              condition: {
-                type: Type.STRING,
-              },
-              title: {
-                type: Type.STRING,
-              },
-              description: {
-                type: Type.STRING,
-              },
+              required: ['id', 'type', 'step_no', 'target_id', 'description'],
             },
-            required: ['id', 'type', 'step_no', 'target_id'],
           },
         },
-      },
-    });
+      });
 
-    const data = response.text ? JSON.parse(response.text) : '';
-    console.log(data);
+      if (!response.text) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          error: 'No response received from AI service.',
+        });
+      }
 
-    res.status(HttpStatus.CREATED).json({ data: data });
+      const data = JSON.parse(response.text);
+      console.log('AI Response:', data);
 
-    return [];
+      if (data.status === 400) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          error: data.reason || 'AI could not create workflow.',
+        });
+      }
+
+      if (!Array.isArray(data)) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          error: 'Invalid response format from AI service.',
+        });
+      }
+
+      const transformedData = this.flowTransformationService.serviceToFlow(data as ServiceStep[]);
+
+      res.status(HttpStatus.CREATED).json({ data: transformedData });
+      return transformedData;
+
+    } catch (error) {
+      console.error('Error in controller:', error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: 'Internal server error.',
+        details: error.message,
+      });
+    }
   }
 }

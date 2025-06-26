@@ -1,0 +1,229 @@
+{
+  "_id": "684a702ed041112e9dc3e1cd",
+  "id": "9c92eab88cd04c608cb3d750415ff457",
+  "title": "PromptEnhancer V",
+  "description": "AI assistant that analyzes and refines system prompts to improve clarity, structure, and performance. Ideal for prompt engineers and developers seeking optimized, high-quality AI directives.",
+  "active": false,
+  "project_id": "b4c5248357874643aedca7a32ab1c89a",
+  "abilities": [],
+  "auth": "acf809afbb5841bbb79f6ba9406d3139",
+  "response_type": "text",
+  "randomness": 0.6,
+  "user_id": "blt043645b976bcde8f",
+  "org_id": "blt87b0a3aff3fc7a51",
+  "created_at": "2025-06-12T06:14:06.365Z",
+  "updated_at": "2025-06-25T07:19:44.920Z",
+  "__v": 0,
+  "model_id": "gemini-2.0-flash",
+  "provider": "gemini",
+  "role_setting": "<AgentBackground>You are PromptEnhancer, an AI assistant specializing in refining and optimizing system prompts for AI agents. You possess a deep understanding of prompt engineering principles, including role definition, instruction clarity, and output formatting. Your expertise lies in transforming vague or incomplete prompts into structured, effective directives that maximize agent performance.\n\nYou were designed to assist prompt engineers, AI developers, and anyone seeking to improve the quality and effectiveness of their AI interactions. Your analytical approach is systematic, detail-oriented, and focused on practical application. You excel at identifying areas for improvement and implementing best practices to create high-quality system prompts.\n\n- Expertise in prompt engineering techniques\n- Strong understanding of AI agent behavior\n- Ability to identify and address prompt weaknesses\n- Proficiency in structuring and formatting prompts\n- Knowledge of various AI applications and use cases</AgentBackground>\n\n<AgentInstruction>When analyzing a user-submitted system prompt:\n1. Identify the intended purpose and objectives of the prompt.\n2. Evaluate the prompt's clarity, specificity, and completeness.\n3. Identify any missing elements or areas for improvement based on prompt engineering best practices.\n4. Apply structured improvement techniques, such as role definition, contextual enrichment, instruction clarity, and output formatting.\n5. Optimize the prompt for performance by incorporating chain-of-thought principles, balancing brevity with comprehensiveness, and organizing information logically.\n\nWhen improving the system prompt:\n1. Establish a clear and specific role for the AI agent that is relevant to the task domain.\n2. Add relevant background context to provide the agent with the necessary information to perform the task effectively.\n3. Ensure that instructions are direct, specific, and unambiguous.\n4. Use appropriate XML tags to organize complex information and improve readability.\n5. Break down complex tasks into clear sequential steps to guide the agent's actions.\n6. Incorporate illustrative examples where beneficial to demonstrate the desired behavior.\n\nWhen optimizing the system prompt:\n1. Apply chain-of-thought principles for complex reasoning tasks to encourage step-by-step thinking.\n2. Ensure that the tone and voice of the prompt are appropriate for the intended application.\n3. Balance brevity with comprehensiveness to provide sufficient detail without overwhelming the agent.\n4. Remove redundancies and consolidate similar instructions to improve efficiency.\n5. Organize information in order of importance to guide the agent's focus.</AgentInstruction>\n\n<AgentOutputFormatting>Present your improved system prompt using a structured format with the following components:\n\nrequired elements:\n- AgentBackground: A detailed description of the AI agent's role, expertise, and contextual information.\n- AgentInstruction: Clear and specific instructions for task execution, including step-by-step processes and decision-making frameworks.\n- AgentOutputFormatting: Guidelines for the presentation and structure of the agent's outputs, including format, style, and tone.\n\nstyle guidelines:\n- Use professional, clear, and concise language.\n- Organize information logically using headers, subheaders, and bullet points.\n- Use XML tags to structure the prompt and improve readability.\n- Provide sufficient detail to guide the agent's behavior without being overly verbose.\n- Ensure that the prompt is well-formatted and easy to understand.\n\nquality parameters:\n- Clarity of instructions\n- Specificity of role definition\n- Completeness of contextual information\n- Logical organization of content\n- Effectiveness in guiding agent behavior</AgentOutputFormatting>",
+  "input_schema": "[{\"id\":\"16ebtcjlq2nj\",\"name\":\"role\",\"description\":\"A concise summary of the AI agent’s identity and core specialization.\",\"type\":\"textarea\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"5j3ds4nnc5\",\"name\":\"expertise\",\"description\":\"Key areas of proficiency relevant to prompt design and AI optimization.\",\"type\":\"textarea\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"ze5qpcvsvq\",\"name\":\"contextualKnowledge\",\"description\":\"Relevant background or contextual information the agent should know to perform optimally.\",\"type\":\"textarea\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"acd5tb3k9bc\",\"name\":\"objective\",\"description\":\"A concise statement of the agent's primary goal.\",\"type\":\"string\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"qij6vny06to\",\"name\":\"stepByStepProcess\",\"description\":\"Sequential steps the agent must follow during prompt analysis and enhancement.\",\"type\":\"textarea\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"mf5nxenritn\",\"name\":\"bestPractices\",\"description\":\"A list of prompt design principles the agent should follow.\",\"type\":\"textarea\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"8nagn9fxiz3\",\"name\":\"structure\",\"description\":\"Specific XML tag layout or formatting structure to follow.\",\"type\":\"textarea\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"dwtaejqmo3w\",\"name\":\"style\",\"description\":\"Formatting and language guidelines for clarity, tone, and readability.\",\"type\":\"textarea\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"8ro3arkj5cl\",\"name\":\"tone\",\"description\":\"Desired tone of voice for the agent’s response (e.g., formal, instructional, friendly).\",\"type\":\"select\",\"isArray\":false,\"required\":true,\"nestedProperties\":[],\"enumValues\":[\"formal\",\"professional\",\"neutral\",\"friendly\",\"instructional\"]},{\"id\":\"v1qoqg16dvc\",\"name\":\"includeExamples\",\"description\":\"Whether to show examples in the optimized prompt\",\"type\":\"boolean\",\"isArray\":false,\"required\":false,\"nestedProperties\":[],\"enumValues\":[]},{\"id\":\"1gjrztegf9s\",\"name\":\"enableChainOfThought\",\"description\":\"Whether to encourage step-by-step reasoning\",\"type\":\"boolean\",\"isArray\":false,\"required\":false,\"nestedProperties\":[],\"enumValues\":[]}]",
+  "brandkit": {
+    "enabled": false,
+    "knowledge_vault": false
+  },
+  "provider_options": [
+    {
+      "label": "OpenAI",
+      "value": "chatgpt"
+    },
+    {
+      "label": "Vertex AI",
+      "value": "vertex"
+    },
+    {
+      "label": "Azure OpenAI",
+      "value": "azurechatgpt"
+    },
+    {
+      "label": "Google Gemini",
+      "value": "gemini"
+    },
+    {
+      "label": "Anthropic Claude",
+      "value": "anthropic"
+    }
+  ],
+  "response_types": [
+    {
+      "label": "JSON",
+      "value": "json"
+    },
+    {
+      "label": "Text",
+      "value": "text"
+    },
+    {
+      "label": "HTML",
+      "value": "html"
+    },
+    {
+      "label": "Markdown",
+      "value": "markdown"
+    }
+  ],
+  "model_options": {
+    "chatgpt": [
+      {
+        "label": "gpt-4-turbo",
+        "value": "gpt-4-turbo"
+      },
+      {
+        "label": "gpt-4o",
+        "value": "gpt-4o"
+      },
+      {
+        "label": "gpt-4o-mini",
+        "value": "gpt-4o-mini"
+      },
+      {
+        "label": "o3-mini",
+        "value": "o3-mini"
+      }
+    ],
+    "vertex": [
+      {
+        "label": "gemini-1.5-flash",
+        "value": "gemini-1.5-flash"
+      },
+      {
+        "label": "gemini-1.5-pro",
+        "value": "gemini-1.5-pro"
+      },
+      {
+        "label": "gemini-2.0-flash",
+        "value": "gemini-2.0-flash"
+      },
+      {
+        "label": "gemini-2.0-pro-exp-02-05",
+        "value": "gemini-2.0-pro-exp-02-05"
+      },
+      {
+        "label": "gemini-2.0-flash-thinking-exp-01-21",
+        "value": "gemini-2.0-flash-thinking-exp-01-21"
+      }
+    ],
+    "azurechatgpt": [
+      {
+        "label": "MODEL IS CONFIGURED IN AZURE",
+        "value": "MODEL IS CONFIGURED IN AZURE"
+      }
+    ],
+    "gemini": [
+      {
+        "label": "gemini-1.5-flash",
+        "value": "gemini-1.5-flash"
+      },
+      {
+        "label": "gemini-1.5-pro",
+        "value": "gemini-1.5-pro"
+      },
+      {
+        "label": "gemini-2.0-flash",
+        "value": "gemini-2.0-flash"
+      },
+      {
+        "label": "gemini-2.0-pro-exp-02-05",
+        "value": "gemini-2.0-pro-exp-02-05"
+      },
+      {
+        "label": "gemini-2.0-flash-thinking-exp-01-21",
+        "value": "gemini-2.0-flash-thinking-exp-01-21"
+      }
+    ],
+    "anthropic": [
+      {
+        "label": "claude-3-5-sonnet-latest",
+        "value": "claude-3-5-sonnet-latest"
+      },
+      {
+        "label": "claude-3-5-haiku-latest",
+        "value": "claude-3-5-haiku-latest"
+      },
+      {
+        "label": "claude-3-opus-latest",
+        "value": "claude-3-opus-latest"
+      }
+    ]
+  },
+  "ability_options": [],
+  "auth_options": [
+    {
+      "group_name": "contentstack",
+      "title": "Contentstack OAuth #1",
+      "auth_id": "4da9e7a9176141eb9fe9dc16eb633eca",
+      "user_id": "blt962a6875d083da58",
+      "org_id": "blt87b0a3aff3fc7a51",
+      "connector_id": "9230134456674e95a4d569aaeebf72de",
+      "type": "oauth2",
+      "client_id": "Znhr2dL1deRoH5B_",
+      "content_type": "application/json",
+      "access_url": "https://dev-developerhub-api.csnonprod.com/apps/token",
+      "refresh_url": "https://dev-developerhub-api.csnonprod.com/apps/token",
+      "callback_url": "http://localhost:3002/userauths/auth/callback",
+      "auth": "ENC_123456789012;GwkCOKCeGO9Wwwow;Rwn4OQqWMNDnoPgaAa2lXw==;0eQIG1X4TLKlcGO+9sUhQNA+WiRuqnxVKw8BSt9NzU+aJ9ZIk6C8RA/+Tz6XidKMlOAibgankRVDncDCKtUwl5B3Uecg12SdH6jR0F5lnhHxGPzyaeUZeQIH4IoHsnvlg/m1RKqAHp8z1ZExVDXuqu/i54EHsbDjftAKYzGzXJG7h3SjlHrDhKertqzuCaTEgRh5HcCekcVsOYSIJpVWcF2M8AaRz+lxIScsstA0DoyTRlZOMQn0o5F+xmx7gPctRyfCHRkZEDSaSiVpd3Sghu7JAeLaRdr8awwhWgCvBhlaNfmMOV+N8JnHw29v507D5JmL9gq+nzBtQ9bh+29ilbLIxve8Fl4a8tnRIJEHFjz1lx1lC7KfsRRAkHZnnLoId9WiEkL6ibadu2Vm5Ad9UvqiZaQgjZ5wZqQV2srKy2SAksB7626ZCtaeGn8EEGZ2QcUKHt9gYLw4bkownlSlgvA7CKzkLHAh3a2Q2KmJQNU1KM8PfsLC5JGy2pd/4gv/QPp+fOiEzJst8Hv5iIgqg4Qh/UKKQCdCGn7C+14U6iLziDIukER0atnRCZQzKv72Y5gztjGZqWB2JgcamEWU8M9mKGH3psO3qDmPrrUmUZd/FKB2QQwnSQY7bt4wvn46TxhrV8IEtm1fdiyhCqjSBuB3wLprs4TsvlA93ujJ/jSlyZSjNLZHbvPpph1DTrnEQ75/lKFPGQh+y3d2Dfd85Elioe4Z21aWd3mbX2JtCX1RhCEoo0dd7aECyXaeBmBt0nJaYLvtU4GWCbS9OcfUNQFijZJQp7S1ZLWVUvYzX09YhXYAcNQzWK8uz94FzjEfdBrKO/Tipz0LW+nlcsyNbU7iNMK48VVIMYKNgSFeYaAgclDuK7FKto8WGzxB7ptarFR1w43AAFSGSXHW606Uz2rZhmKh6gP+TmIK3ksD+lQimFXANv9vQU5IdxM58b+dE8uzFgfzMYs1zIqe+WBqyYgvEk4MqwOMnN2Oy+SFVE0XHPfsLP4jUz3ktQe9NJ4jzF0UM8jImnpQqnrjysXIUbNpyFZm0+1PQ1LUpd4oS4cbu8UZiP0BMarwVCxyvVFHMkR+v2zUj/G1PKG2JVqTwI49o+njy+Ulion0OJNwG6iatoSz96MAQynHZ3onPkhRgNQ9ABWGKDTI/ldtbWRME8QY3jnI9IuGagBiwUbN0oRu0wf0W4o3ogyYG1Bl0RtaB16vGycMlIrIi5Kt5MESZMYdqnr3V4j8aml9I200AuBJx4NxLe4ZKZUkIeMiW7pn6bPp6yCKDxC6GQ6QMYUMbfC16GucTbOJnlIdDv8ZGZ2Q79t7A1Yd3MIGgYzEU0xrG3OiczsS8JZJqF9idsYelB0tKcJOYQ0dfqaCmArk5XVBhisjZysNfwX0stb9cRJLxDsiraEzirb6zP0SoTJdTg9yyMMoLWvrhpxAsvmcvVlu1XPj2JIKxc2cMK7DAG6UtewV1yz5ue/V3UijxLliVSKpycMobFDO8mwdnsyEq86H28LMv3RYedKGi8zU2z4DvlzCh62Bkdc+PnATMH9h0xusGSs9A1EbZVeOysOGsUuifwfzioAdXDXAImEVgeI0+s3p2KZBVd+DhJ+wQl0o2O7ChoJ9KW/vo63W5n2rWvUg5Cqrs9IkW2D88oO32HIakU+xQOFxt1M7L7SaLFdkoSExRgEEt5rhuAIwegmQda8Yri0JKbCV14W1VToVWzjhv1U5tPMsWmj22jIVwS0CftVT1a0u2Q9HXHuJAUJqlDpxDS6w2rSlW7eSRdgNpqYLaaoOhM7oE7RbDHhgjf2YTSTIEbuR1tctOPPEyFg=",
+      "access_call_opts": "{\n  \"code\": \"{{code}}\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"redirect_uri\": \"{{redirect_url}}\",\n  \"grant_type\": \"authorization_code\"\n}",
+      "refresh_call_opts": "{\n  \"refresh_token\": \"{{refresh_token}}\",\n  \"client_id\": \"{{client_id}}\",\n  \"client_secret\": \"{{client_secret}}\",\n  \"redirect_uri\": \"{{redirect_url}}\",\n  \"grant_type\": \"refresh_token\"\n}",
+      "source": "automations",
+      "meta": "{\"scope\":{\"user:read\":true,\"cm.entries.management:read\":true,\"cm.entries.management:write\":true,\"cm.webhooks.management:read\":true,\"cm.webhooks.management:write\":true,\"cm.stacks.management:read\":true,\"organizations:read\":true,\"cm.content-types.management:read\":true,\"cm.environments.management:read\":true,\"cm.global-fields.management:read\":true,\"cm.releases.management:read\":true,\"cm.releases.management:write\":true,\"cm.workflows.management:read\":true,\"cm.entry.workflow:write\":true,\"cm.languages.management:read\":true,\"cm.assets.management:read\":true,\"cm.asset:read\":true,\"cm.entry:publish\":true,\"cm.entry:unpublish\":true,\"cm.asset:publish\":true,\"cm.asset:unpublish\":true,\"cm.release:read\":true,\"cm.branches.management:read\":true,\"cm.branches.management:write\":true,\"cm.branch-aliases.management:read\":true,\"cm.branch-aliases.management:write\":true,\"cm.branches:compare-merge\":true,\"cm.release:deploy\":true,\"cm.publish-queue.management:read\":true,\"cm.stack.users:read\":true,\"cm.roles.management:read\":true,\"cm.bulk-operations:publish\":true,\"cm.assets.management:write\":true,\"cm.taxonomies.management:read\":true,\"cm.taxonomies.management:write\":true,\"cm.taxonomy.terms:read\":true,\"cm.taxonomy.terms:write\":true,\"cm.entry:write\":true,\"cm.variant:read\":true,\"cm.variant:write\":true}}",
+      "done": true,
+      "published": true,
+      "code_verifier": null,
+      "code_challenge": null,
+      "headers": "",
+      "scope_join_char": "",
+      "created_at": "2025-06-24T09:35:01.907Z",
+      "updated_at": "2025-06-24T09:35:18.435Z",
+      "id": "cd25eb9fe1f146d586d6832bdad24c07",
+      "expires_at": 1750761316396,
+      "project_id": "b4c5248357874643aedca7a32ab1c89a",
+      "updated_by": "blt962a6875d083da58"
+    },
+    {
+      "group_name": "gemini",
+      "title": "Gemini #1",
+      "description": "gemini auth",
+      "auth_id": "3dfad2a6df504e169df62d5d780d2ce4",
+      "user_id": "blt962a6875d083da58",
+      "org_id": "blt87b0a3aff3fc7a51",
+      "connector_id": "35743d8ed3904fda9e5ae397f2211a8c",
+      "project_id": "b4c5248357874643aedca7a32ab1c89a",
+      "type": "custom",
+      "content_type": "application/json",
+      "callback_url": "http://localhost:3002/userauths/auth/callback",
+      "auth": "ENC_123456789012;aXsYlq8gD/XwJ69g;1IvqHKIQt4eBQZ2X24GI9g==;h+mxfHg4o583H0r0iyirPof+Xf6hiEjAVGnu8p6hB/Surcn8+3KzTVuWJ7QCq2u3Qay0kMU=",
+      "source": "automations",
+      "done": false,
+      "published": true,
+      "has_connect": false,
+      "updated_by": "blt962a6875d083da58",
+      "scope_join_char": ",",
+      "created_at": "2025-06-24T09:52:21.368Z",
+      "updated_at": "2025-06-24T09:52:21.368Z",
+      "id": "05acc1b033ce4253ae4da0925154ca70"
+    },
+    {
+      "group_name": "gemini",
+      "title": "Gemini #2",
+      "description": "gemini auth",
+      "auth_id": "3dfad2a6df504e169df62d5d780d2ce4",
+      "user_id": "blt043645b976bcde8f",
+      "org_id": "blt87b0a3aff3fc7a51",
+      "connector_id": "35743d8ed3904fda9e5ae397f2211a8c",
+      "project_id": "b4c5248357874643aedca7a32ab1c89a",
+      "type": "custom",
+      "content_type": "application/json",
+      "callback_url": "http://localhost:3002/userauths/auth/callback",
+      "auth": "ENC_123456789012;7C6GaY+mIMEtBAno;6OFU0m/s/yoiDLsrOtZCwg==;n12tqkBeub/nEQ3iNJaal2Zhl5QuniinvKGfykbN6qHvdYkDaOGSsVROkDe1wLEey7CcREA=",
+      "source": "automations",
+      "done": false,
+      "published": true,
+      "has_connect": false,
+      "updated_by": "blt043645b976bcde8f",
+      "scope_join_char": ",",
+      "created_at": "2025-06-25T05:52:48.560Z",
+      "updated_at": "2025-06-25T05:52:48.560Z",
+      "id": "acf809afbb5841bbb79f6ba9406d3139"
+    }
+  ]
+}

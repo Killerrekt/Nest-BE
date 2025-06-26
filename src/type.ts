@@ -52,3 +52,64 @@ export interface AgentConfig {
   response_types: Option[];
   model_options: Record<string, Option[]>;
 }
+
+export interface NodeSideBarData {
+  title: string;
+  type: string;
+  placeholder: string;
+}
+
+export interface Node {
+  id: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  data: {
+    title: string;
+    description: string;
+    inputs: NodeSideBarData[];
+    icon: string;
+    isIsland: boolean;
+  };
+  type: string;
+}
+
+export interface Edge {
+  id: string;
+  source: string;
+  sourceHandle: string;
+  target: string;
+  targetHandle: string;
+  label?: string;
+}
+
+export interface ServiceStep {
+  id: string;
+  type: string;
+  target_id: Array<{
+    id: string;
+    label?: string;
+  }>;
+  step_no: number;
+  condition?: string;
+  title: string;
+  description: string;
+  action?: string;
+}
+
+export interface FlowJson {
+  nodes: Node[];
+  edges: Edge[];
+}
+
+export type InputField = {
+  id: string;
+  name: string;
+  description: string;
+  type: 'string' | 'boolean' | 'select' | 'textarea' | 'number';
+  isArray: boolean;
+  required: boolean;
+  nestedProperties: InputField[];
+  enumValues: string[];
+};
