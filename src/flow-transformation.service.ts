@@ -57,7 +57,7 @@ export class FlowTransformationService {
           title: ele.title,
           description: ele.description,
           inputs: inputs,
-          icon: 'zap',
+          icon: ele.icon || 'zap', // Use the icon from Claude response, fallback to 'zap'
           isIsland: false,
         },
         type: 'custom',

@@ -15,6 +15,7 @@ import { ReduceAbilityResJson, ReduceTiggerResJson } from './json';
 import { FlowTransformationService } from './flow-transformation.service';
 import { ServiceStep, AgentConfig } from './type';
 import Anthropic from '@anthropic-ai/sdk';
+import { ConvertAgentInstructions } from './agent-role-parser';
 
 @Controller()
 export class AppController {
@@ -353,30 +354,57 @@ export class AppController {
       const abilitiesJson = { abilities: transformedAbilities };
       const triggers = ReduceTiggerResJson();
       const agentDescription = AgentToFlowJSON.description;
-      const rawSchema = AgentToFlowJSON.input_schema;
+      
+      // Parse role settings using the agent role parser
+      const roleParsed = ConvertAgentInstructions(AgentToFlowJSON.role_setting || '');
+      const { background, instruction, output: outputFormatting } = roleParsed;
+      
+      console.log('=== PARSED ROLE SETTINGS ===');
+      console.log('Background found:', !!background);
+      console.log('Instructions found:', !!instruction);
+      console.log('Output formatting found:', !!outputFormatting);
+      if (background) console.log('Background preview:', background.substring(0, 150) + '...');
+      if (instruction) console.log('Instructions preview:', instruction.substring(0, 150) + '...');
+      if (outputFormatting) console.log('Output preview:', outputFormatting.substring(0, 150) + '...');
+      console.log('=== END ROLE PARSING ===');
 
-      const inputFields = parseAgentInputSchema(rawSchema);
-
-      console.log('Input fields:', JSON.stringify(inputFields, null, 2));
-
-      const content = `You are an agent responsible for creating workflows that don't have any knowledge about ability and trigger other than the provided one.
-      The output returned should be an array that shows the step by step breakdown of the workflow. Try keeping the number of steps to a minimum.
-      Each step should follow this format:
+      const content = `AGENT CONTEXT:
+      ${background ? `Background: ${background}` : ''}
+      
+      ${instruction ? `Instructions: ${instruction}` : ''}
+      
+      ${outputFormatting ? `Output Guidelines: ${outputFormatting}` : ''}
+      
+      WORKFLOW CREATION TASK:
+      You are responsible for creating workflows based on the agent context above. You can only use the abilities and triggers provided below.
+      
+      The output must be a JSON array showing the step-by-step breakdown of the workflow. Keep the number of steps to a minimum.
+      Each step should follow this exact format:
 
       {
-        id: string, // unique step ID
-        type: string, // one of: 'ability', 'if', 'loop', or 'trigger'
-        target_id: [
+        "id": "string", // unique step ID
+        "type": "string", // one of: "ability", "if", "loop", or "trigger"
+        "target_id": [
           {
-            id: string,        // ID of the target step
-            label?: string     // Optional label to explain the connection
+            "id": "string",        // ID of the target step
+            "label": "string"      // Optional label to explain the connection
           }
         ],
-        step_no: integer, // The level of the node in the workflow tree
-        condition?: string, // Only if conditional
-        title: string,
-        description: string
+        "step_no": number, // The level of the node in the workflow tree
+        "condition": "string", // Only if conditional
+        "title": "string",
+        "description": "string",
+        "icon": "string" // A relevant icon from lucide-react library
       }
+
+      ICON SELECTION:
+      Choose appropriate icons from the lucide-react library based on the step type and functionality:
+      - For triggers: "play", "webhook", "mail", "calendar", "clock", "bell", "radio"
+      - For abilities/actions: "zap", "send", "database", "file-text", "image", "upload", "download", "edit", "trash", "copy", "search", "filter", "settings", "user", "users", "message-square", "phone", "video", "map", "shopping-cart", "credit-card", "lock", "unlock", "key", "shield", "eye", "eye-off", "heart", "star", "bookmark", "flag", "tag", "paperclip", "link", "external-link", "refresh", "rotate-cw", "arrow-right", "arrow-left", "arrow-up", "arrow-down", "plus", "minus", "x", "check", "alert-triangle", "alert-circle", "info", "help-circle"
+      - For conditionals: "git-branch", "split", "merge", "decision", "help-circle", "alert-triangle", "check-circle", "x-circle"
+      - For loops: "repeat", "rotate-cw", "refresh", "arrow-right-left", "repeat-1"
+      
+      Select the most contextually appropriate icon for each step based on its functionality.
 
 
       Each workflow should start by a trigger and only use the triggers which are provided in the following json :- ${JSON.stringify(triggers)}.
@@ -399,14 +427,18 @@ export class AppController {
 
       If you are using a loop, indicate the end of the loop by pointing the target_id back to the loop starting id.
 
-      If you are able to create an workflow return the output as described or else return the following json :-
+      WORKFLOW REQUIREMENT:
+      Based on the agent context above and the following description: "${agentDescription}"
+      
+      Create a workflow that aligns with the agent's background, follows the instructions, and uses the output guidelines provided.
+      
+      If you cannot create a workflow, return:
       {
-        staus : 400,
-        reason : string // why did it fail
+        "status": "400",
+        "reason": "explanation of why it failed"
       }
-
-      Here is a text :- ${agentDescription}. From this extract a basic workflow and create it based on the rules declared above.
-      Do NOT wrap your response in markdown backticks. Do not include explanations. Just output raw JSON.
+      
+      IMPORTANT: Return ONLY valid JSON. Do NOT wrap in markdown backticks. Do NOT include explanations.
       `;
 
       const anthropic = new Anthropic({
@@ -415,9 +447,16 @@ export class AppController {
 
       const msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
+        max_tokens: 2500,
         messages: [{ role: 'user', content: content }],
       });
+
+      // Log token usage information
+      console.log('=== CLAUDE TOKEN USAGE ===');
+      console.log('Input tokens:', msg.usage.input_tokens);
+      console.log('Output tokens:', msg.usage.output_tokens);
+      console.log('Total tokens:', msg.usage.input_tokens + msg.usage.output_tokens);
+      console.log('=== END TOKEN USAGE ===');
 
       let data = [];
 
@@ -425,7 +464,7 @@ export class AppController {
         data = JSON.parse(msg.content[0].text);
       }
 
-      console.log(data);
+      console.log('Claude response:', data);
 
       if (!Array.isArray(data)) {
         return res.status(HttpStatus.NOT_ACCEPTABLE).json(data);

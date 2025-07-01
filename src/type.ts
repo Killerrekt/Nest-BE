@@ -96,6 +96,7 @@ export interface ServiceStep {
   title: string;
   description: string;
   action?: string;
+  icon?: string;
 }
 
 export interface FlowJson {
