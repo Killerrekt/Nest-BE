@@ -28,13 +28,15 @@ export class FlowTransformationService {
 
       stepMap.set(ele.id, ele.step_no);
       if (ele.target_id && ele.target_id.length > 0) {
-        ele.target_id.forEach((target) =>
+        console.log('target_id : ', ele.target_id);
+        ele.target_id.forEach((target) => {
+          console.log(target);
           arr.push({
             source: ele.id,
             target: target.id,
             label: target.label,
-          }),
-        );
+          });
+        });
       }
       const temp: Node = {
         id: ele.id,

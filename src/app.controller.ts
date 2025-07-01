@@ -14,6 +14,7 @@ import { GoogleGenAI, Type } from '@google/genai';
 import { ReduceAbilityResJson, ReduceTiggerResJson } from './json';
 import { FlowTransformationService } from './flow-transformation.service';
 import { ServiceStep, AgentConfig } from './type';
+import Anthropic from '@anthropic-ai/sdk';
 
 @Controller()
 export class AppController {
@@ -120,17 +121,23 @@ export class AppController {
 
       const content = `You are an agent responsible for creating workflows that don't have any knowledge about ability and trigger other than the provided one.
       The output returned should be an array that shows the step by step breakdown of the workflow. Try keeping the number of steps to a minimum.
-      Each step should have the general format of 
+      Each step should follow this format:
+
       {
-          id : string //unique
-          type : string //can only be ability,if,loop or trigger
-          target_id? : {id : string// id of next step, 
-                        label? : string// explains how are they connected }[]
-          step_no : int //the level of the node in this workflow tree.
-          condition? : string // if conditional mention the condition
-          title : string, 
-          description : string,
+        id: string, // unique step ID
+        type: string, // one of: 'ability', 'if', 'loop', or 'trigger'
+        target_id: [
+          {
+            id: string,        // ID of the target step
+            label?: string     // Optional label to explain the connection
+          }
+        ],
+        step_no: integer, // The level of the node in the workflow tree
+        condition?: string, // Only if conditional
+        title: string,
+        description: string
       }
+
 
       Each workflow should start by a trigger and only use the triggers which are provided in the following json :- ${JSON.stringify(triggers)}.
       The step containing trigger should have following value along with the general format =>
@@ -152,7 +159,7 @@ export class AppController {
 
       If you are using a loop, indicate the end of the loop by pointing the target_id back to the loop starting id.
 
-      If you are able to create an workflow return status 200 along with the output or else return the following json :-
+      If you are able to create an workflow return the output as described or else return the following json :-
       {
         staus : 400,
         reason : string // why did it fail
@@ -227,6 +234,147 @@ export class AppController {
           error: data.reason || 'AI could not create workflow.',
         });
       }
+
+      if (!Array.isArray(data)) {
+        return res.status(HttpStatus.NOT_ACCEPTABLE).json(data);
+      }
+
+      const transformedData = this.flowTransformationService.serviceToFlow(
+        data as ServiceStep[],
+      );
+
+      res.status(HttpStatus.CREATED).json({ data: transformedData });
+      return transformedData;
+    } catch (error) {
+      console.error('Error in controller:', error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: 'Internal server error.',
+        details: error.message,
+      });
+    }
+  }
+
+  @Post('claude')
+  async FlowJson(
+    @Body() AgentToFlowJSON: any,
+    @Res() res: Response,
+  ): Promise<any> {
+    try {
+      // Process abilities array
+      let transformedAbilities: any[] = [];
+      if (
+        AgentToFlowJSON.abilities &&
+        Array.isArray(AgentToFlowJSON.abilities)
+      ) {
+        transformedAbilities = AgentToFlowJSON.abilities.map((ability: any) => {
+          const transformedAbility = {
+            id: ability.id,
+            title: ability.title,
+            type: ability.type,
+            group_name: ability.configured_action?.group_name || null,
+            description: ability.configured_action?.tool_description || null,
+            connector_id: ability.configured_action?.connector_id || null,
+          };
+          return transformedAbility;
+        });
+      } else {
+        console.log('No abilities array found or abilities is not an array');
+      }
+
+      // Validate request body
+      if (!AgentToFlowJSON) {
+        console.log('Request body is empty/undefined');
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          error: 'Invalid request body. Expected agent data is missing.',
+        });
+      }
+
+      if (!AgentToFlowJSON.description) {
+        console.log('Description is missing from request body');
+        console.log('Available keys:', Object.keys(AgentToFlowJSON || {}));
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          error: 'Agent description is required.',
+          receivedKeys: Object.keys(AgentToFlowJSON || {}),
+        });
+      }
+
+      // Use transformed abilities from request instead of dummy data
+      const abilitiesJson = { abilities: transformedAbilities };
+      const triggers = ReduceTiggerResJson();
+      const agentDescription = AgentToFlowJSON.description;
+      const rawSchema = AgentToFlowJSON.input_schema;
+
+      const inputFields = parseAgentInputSchema(rawSchema);
+
+      console.log('Input fields:', JSON.stringify(inputFields, null, 2));
+
+      const content = `You are an agent responsible for creating workflows that don't have any knowledge about ability and trigger other than the provided one.
+      The output returned should be an array that shows the step by step breakdown of the workflow. Try keeping the number of steps to a minimum.
+      Each step should follow this format:
+
+      {
+        id: string, // unique step ID
+        type: string, // one of: 'ability', 'if', 'loop', or 'trigger'
+        target_id: [
+          {
+            id: string,        // ID of the target step
+            label?: string     // Optional label to explain the connection
+          }
+        ],
+        step_no: integer, // The level of the node in the workflow tree
+        condition?: string, // Only if conditional
+        title: string,
+        description: string
+      }
+
+
+      Each workflow should start by a trigger and only use the triggers which are provided in the following json :- ${JSON.stringify(triggers)}.
+      The step containing trigger should have following value along with the general format =>
+      {
+        type : "trigger",
+        step_no : 1,
+        title : string // Don't create on your own, get it and copy it as it is from the json.
+        description : string // copy it as it is from the json and don't change it.
+      }
+      After creating this, check if the trigger title is present in the json or not. You can check the presence by performing an exact string match of the title.
+
+      The ability provided in the following json :- ${JSON.stringify(abilitiesJson)}.
+      The step containing ability should have following value along with the general format =>
+      {
+        type : "ability",
+        title : string // Don't create on your own, get it and copy it as it is from the json.
+        description : string // copy it as it is from the json and don't change it.
+      }
+
+      If you are using a loop, indicate the end of the loop by pointing the target_id back to the loop starting id.
+
+      If you are able to create an workflow return the output as described or else return the following json :-
+      {
+        staus : 400,
+        reason : string // why did it fail
+      }
+
+      Here is a text :- ${agentDescription}. From this extract a basic workflow and create it based on the rules declared above.
+      Do NOT wrap your response in markdown backticks. Do not include explanations. Just output raw JSON.
+      `;
+
+      const anthropic = new Anthropic({
+        apiKey: process.env.CLAUDE_KEY,
+      });
+
+      const msg = await anthropic.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: content }],
+      });
+
+      let data = [];
+
+      if (msg.content[0].type == 'text') {
+        data = JSON.parse(msg.content[0].text);
+      }
+
+      console.log(data);
 
       if (!Array.isArray(data)) {
         return res.status(HttpStatus.NOT_ACCEPTABLE).json(data);
