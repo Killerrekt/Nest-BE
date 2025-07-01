@@ -28,17 +28,6 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post('test')
-  simpleTest(@Body() body: any): any {
-    console.log('Simple test endpoint hit');
-    console.log('Body received:', body);
-    return {
-      message: 'Test endpoint working',
-      body: body,
-      hasDescription: !!body?.description,
-    };
-  }
-
   @Post()
   async getFlowJson(
     @Body() AgentToFlowJSON: any,
@@ -113,31 +102,53 @@ export class AppController {
       const abilitiesJson = { abilities: transformedAbilities };
       const triggers = ReduceTiggerResJson();
       const agentDescription = AgentToFlowJSON.description;
-      const rawSchema = AgentToFlowJSON.input_schema;
-
-      const inputFields = parseAgentInputSchema(rawSchema);
-
-      console.log('Input fields:', JSON.stringify(inputFields, null, 2));
 
       const content = `You are an agent responsible for creating workflows that don't have any knowledge about ability and trigger other than the provided one.
-      The output returned should be an array that shows the step by step breakdown of the workflow. Try keeping the number of steps to a minimum.
-      Each step should follow this format:
-
-      {
-        id: string, // unique step ID
-        type: string, // one of: 'ability', 'if', 'loop', or 'trigger'
-        target_id: [
-          {
-            id: string,        // ID of the target step
-            label?: string     // Optional label to explain the connection
-          }
-        ],
-        step_no: integer, // The level of the node in the workflow tree
-        condition?: string, // Only if conditional
-        title: string,
-        description: string
-      }
-
+      
+      IMPORTANT FORMAT REQUIREMENTS:
+      - Return ONLY a JSON array of step objects
+      - Each step MUST have target_id as an array of objects (NOT a flat array)
+      
+      Here is the EXACT format you must follow:
+      
+      EXAMPLE OF CORRECT OUTPUT:
+      [
+        {
+          "id": "trigger_1",
+          "type": "trigger",
+          "target_id": [{"id": "step_2"}],
+          "step_no": 1,
+          "title": "HTTP Request Trigger",
+          "description": "This event is triggered when HTTP GET/POST requests are made to a webhook URL."
+        },
+        {
+          "id": "step_2",
+          "type": "if", 
+          "target_id": [
+            {"id": "step_3", "label": "true"},
+            {"id": "step_4", "label": "false"}
+          ],
+          "step_no": 2,
+          "condition": "some condition",
+          "title": "Check Condition",
+          "description": "Checks some condition"
+        },
+        {
+          "id": "step_3",
+          "type": "ability",
+          "target_id": [],
+          "step_no": 3,
+          "title": "Some Action",
+          "description": "Does some action"
+        }
+      ]
+      
+      CRITICAL RULES FOR target_id:
+      - NEVER use flat arrays like ["id", "step_2"] 
+      - ALWAYS use object arrays like [{"id": "step_2"}]
+      - For no connections: "target_id": []
+      - For one connection: "target_id": [{"id": "next_step_id"}]
+      - For multiple connections: "target_id": [{"id": "step1", "label": "true"}, {"id": "step2", "label": "false"}]
 
       Each workflow should start by a trigger and only use the triggers which are provided in the following json :- ${JSON.stringify(triggers)}.
       The step containing trigger should have following value along with the general format =>
@@ -159,13 +170,20 @@ export class AppController {
 
       If you are using a loop, indicate the end of the loop by pointing the target_id back to the loop starting id.
 
-      If you are able to create an workflow return the output as described or else return the following json :-
+      IMPORTANT: If you are able to create a workflow, return ONLY the array of steps directly (not wrapped in any object). 
+      If you cannot create a workflow, return ONLY this format:
       {
-        staus : 400,
-        reason : string // why did it fail
+        "status": "400", 
+        "error": "reason why it failed"
       }
 
       Here is a text :- ${agentDescription}. From this extract a basic workflow and create it based on the rules declared above.
+      
+      REMINDER: Your response must be a JSON array where each step has target_id as an array of objects:
+      ✅ CORRECT: "target_id": [{"id": "next_step"}]
+      ❌ WRONG: "target_id": ["id", "next_step"]
+      ✅ CORRECT: "target_id": [{"id": "step1", "label": "yes"}, {"id": "step2", "label": "no"}]  
+      ❌ WRONG: "target_id": ["id", "step1", "label", "yes", "id", "step2", "label", "no"]
     `;
 
       const response = await ai.models.generateContent({
@@ -187,11 +205,20 @@ export class AppController {
                       items: {
                         type: Type.OBJECT,
                         properties: {
-                          id: { type: Type.STRING },
-                          label: { type: Type.STRING },
+                          id: { 
+                            type: Type.STRING,
+                            description: 'The ID of the target step'
+                          },
+                          label: { 
+                            type: Type.STRING,
+                            description: 'Optional label describing the connection'
+                          },
                         },
                         required: ['id'],
+                        additionalProperties: false,
+                        description: 'A target object with id and optional label'
                       },
+                      description: 'Array of target connection objects (NOT a flat array of strings)',
                     },
                     step_no: { type: Type.INTEGER },
                     condition: { type: Type.STRING },
@@ -203,6 +230,7 @@ export class AppController {
                     'type',
                     'step_no',
                     'target_id',
+                    'title',
                     'description',
                   ],
                 },
@@ -226,12 +254,35 @@ export class AppController {
         });
       }
 
-      const data = JSON.parse(response.text);
-      console.log('AI Response:', data);
+      let data = JSON.parse(response.text);
+      console.log('AI Response (raw):', data);
+      
+      // Post-process the data to fix target_id JSON strings
+      if (Array.isArray(data)) {
+        data = data.map((step: any) => {
+          if (step.target_id && Array.isArray(step.target_id)) {
+            step.target_id = step.target_id.map((target: any) => {
+              // If target is a JSON string, parse it to object
+              if (typeof target === 'string' && target.startsWith('{')) {
+                try {
+                  return JSON.parse(target);
+                } catch (e) {
+                  console.warn(`Failed to parse target JSON string: ${target}`);
+                  return null;
+                }
+              }
+              // If it's already an object, return as is
+              return target;
+            }).filter(Boolean); // Remove any null values from failed parsing
+          }
+          return step;
+        });
+        console.log('AI Response (processed):', data);
+      }
 
-      if (data.status === 400) {
+      if (data.status === '400') {
         return res.status(HttpStatus.BAD_REQUEST).json({
-          error: data.reason || 'AI could not create workflow.',
+          error: data.error || 'AI could not create workflow.',
         });
       }
 

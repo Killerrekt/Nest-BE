@@ -27,16 +27,25 @@ export class FlowTransformationService {
       }
 
       stepMap.set(ele.id, ele.step_no);
-      if (ele.target_id && ele.target_id.length > 0) {
-        console.log('target_id : ', ele.target_id);
-        ele.target_id.forEach((target) => {
-          console.log(target);
-          arr.push({
-            source: ele.id,
-            target: target.id,
-            label: target.label,
-          });
-        });
+      if (ele.target_id && Array.isArray(ele.target_id) && ele.target_id.length > 0) {
+        // Validate that target_id is an array of objects, not a flat array
+        const isValidTargetArray = ele.target_id.every(
+          (target) => target && typeof target === 'object' && target.id
+        );
+        
+        if (isValidTargetArray) {
+          ele.target_id.forEach((target) =>
+            arr.push({
+              source: ele.id,
+              target: target.id,
+              label: target.label,
+            }),
+          );
+        } else {
+          console.error(`Invalid target_id format for ${ele.id}:`, ele.target_id);
+          console.error('Expected format: [{id: "string", label?: "string"}]');
+          // Skip this step's connections due to invalid format
+        }
       }
       const temp: Node = {
         id: ele.id,
@@ -59,10 +68,11 @@ export class FlowTransformationService {
     const edges: Edge[] = [];
     let count = 1;
     const HandleMap = new Map<string, string[]>();
-    arr.forEach((ele) => {
-      if (!ele.target && !ele.source) {
-        return;
-      }
+          arr.forEach((ele) => {
+        // Skip if either source or target is missing
+        if (!ele.target || !ele.source) {
+          return;
+        }
 
       const sourceStep = stepMap.get(ele.source);
       const targetStep = stepMap.get(ele.target);
@@ -91,6 +101,8 @@ export class FlowTransformationService {
 
       edges.push(temp);
     });
+
+    
 
     return {
       nodes: nodes,
