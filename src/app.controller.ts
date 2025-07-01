@@ -38,7 +38,7 @@ export class AppController {
     };
   }
 
-    @Post()
+  @Post()
   async getFlowJson(
     @Body() AgentToFlowJSON: any,
     @Res() res: Response,
@@ -46,16 +46,25 @@ export class AppController {
     try {
       // Debug log to see what we're receiving
       console.log('=== REQUEST DEBUG ===');
-      console.log('Received request body:', JSON.stringify(AgentToFlowJSON, null, 2));
+      console.log(
+        'Received request body:',
+        JSON.stringify(AgentToFlowJSON, null, 2),
+      );
       console.log('Type of AgentToFlowJSON:', typeof AgentToFlowJSON);
       console.log('AgentToFlowJSON exists:', !!AgentToFlowJSON);
 
       // Process abilities array
       let transformedAbilities: any[] = [];
-      if (AgentToFlowJSON.abilities && Array.isArray(AgentToFlowJSON.abilities)) {
+      if (
+        AgentToFlowJSON.abilities &&
+        Array.isArray(AgentToFlowJSON.abilities)
+      ) {
         console.log('=== PROCESSING ABILITIES ===');
-        console.log('Original abilities:', JSON.stringify(AgentToFlowJSON.abilities, null, 2));
-        
+        console.log(
+          'Original abilities:',
+          JSON.stringify(AgentToFlowJSON.abilities, null, 2),
+        );
+
         transformedAbilities = AgentToFlowJSON.abilities.map((ability: any) => {
           const transformedAbility = {
             id: ability.id,
@@ -67,8 +76,11 @@ export class AppController {
           };
           return transformedAbility;
         });
-        
-        console.log('Transformed abilities:', JSON.stringify(transformedAbilities, null, 2));
+
+        console.log(
+          'Transformed abilities:',
+          JSON.stringify(transformedAbilities, null, 2),
+        );
         // console.log('Number of abilities processed:', transformedAbilities.length);
         console.log('=== END ABILITIES PROCESSING ===');
       } else {
@@ -155,30 +167,48 @@ export class AppController {
         config: {
           responseMimeType: 'application/json',
           responseSchema: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                id: { type: Type.STRING },
-                type: { type: Type.STRING },
-                target_id: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      id: { type: Type.STRING },
-                      label: { type: Type.STRING },
+            oneOf: [
+              {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    id: { type: Type.STRING },
+                    type: { type: Type.STRING },
+                    target_id: {
+                      type: Type.ARRAY,
+                      items: {
+                        type: Type.OBJECT,
+                        properties: {
+                          id: { type: Type.STRING },
+                          label: { type: Type.STRING },
+                        },
+                        required: ['id'],
+                      },
                     },
-                    required: ['id'],
+                    step_no: { type: Type.INTEGER },
+                    condition: { type: Type.STRING },
+                    title: { type: Type.STRING },
+                    description: { type: Type.STRING },
                   },
+                  required: [
+                    'id',
+                    'type',
+                    'step_no',
+                    'target_id',
+                    'description',
+                  ],
                 },
-                step_no: { type: Type.INTEGER },
-                condition: { type: Type.STRING },
-                title: { type: Type.STRING },
-                description: { type: Type.STRING },
               },
-              required: ['id', 'type', 'step_no', 'target_id', 'description'],
-            },
+              {
+                type: Type.OBJECT,
+                properties: {
+                  status: { type: Type.STRING },
+                  error: { type: Type.STRING },
+                },
+                required: ['status', 'error'],
+              },
+            ],
           },
         },
       });
@@ -199,16 +229,15 @@ export class AppController {
       }
 
       if (!Array.isArray(data)) {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-          error: 'Invalid response format from AI service.',
-        });
+        return res.status(HttpStatus.NOT_ACCEPTABLE).json(data);
       }
 
-      const transformedData = this.flowTransformationService.serviceToFlow(data as ServiceStep[]);
+      const transformedData = this.flowTransformationService.serviceToFlow(
+        data as ServiceStep[],
+      );
 
       res.status(HttpStatus.CREATED).json({ data: transformedData });
       return transformedData;
-
     } catch (error) {
       console.error('Error in controller:', error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
