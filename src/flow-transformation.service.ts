@@ -14,27 +14,28 @@ export class FlowTransformationService {
 
       if (ele.action) {
         inputs.push({
-          title: "Action",
-          type: "div",
+          title: 'Action',
+          type: 'div',
           placeholder: ele.action,
         });
-      } else {
+      } else if (ele.condition) {
         inputs.push({
-          title: "Condition",
-          type: "div",
+          title: 'Condition',
+          type: 'div',
           placeholder: ele.condition as string,
         });
       }
 
       stepMap.set(ele.id, ele.step_no);
-      ele.target_id.forEach((target) => 
-        arr.push({
-          source: ele.id,
-          target: target.id,
-          label: target.label,
-        })
-      );
-
+      if (ele.target_id && ele.target_id.length > 0) {
+        ele.target_id.forEach((target) =>
+          arr.push({
+            source: ele.id,
+            target: target.id,
+            label: target.label,
+          }),
+        );
+      }
       const temp: Node = {
         id: ele.id,
         position: {
@@ -45,10 +46,10 @@ export class FlowTransformationService {
           title: ele.title,
           description: ele.description,
           inputs: inputs,
-          icon: "zap",
+          icon: 'zap',
           isIsland: false,
         },
-        type: "custom",
+        type: 'custom',
       };
       nodes.push(temp);
     });
@@ -64,13 +65,13 @@ export class FlowTransformationService {
       const sourceStep = stepMap.get(ele.source);
       const targetStep = stepMap.get(ele.target);
 
-      const LR1 = HandleMap.get(ele.source)?.includes("right")
-        ? "left"
-        : "right";
+      const LR1 = HandleMap.get(ele.source)?.includes('right')
+        ? 'left'
+        : 'right';
 
       const condition = sourceStep && targetStep && sourceStep > targetStep;
-      const pos1 = condition ? LR1 : "bottom";
-      const pos2 = "top";
+      const pos1 = condition ? LR1 : 'bottom';
+      const pos2 = 'top';
 
       const temp = {
         id: `e${count}`,
@@ -94,4 +95,4 @@ export class FlowTransformationService {
       edges: edges,
     };
   }
-} 
+}
