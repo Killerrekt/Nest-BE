@@ -50,6 +50,31 @@ export class AppController {
       console.log('Type of AgentToFlowJSON:', typeof AgentToFlowJSON);
       console.log('AgentToFlowJSON exists:', !!AgentToFlowJSON);
 
+      // Process abilities array
+      let transformedAbilities: any[] = [];
+      if (AgentToFlowJSON.abilities && Array.isArray(AgentToFlowJSON.abilities)) {
+        console.log('=== PROCESSING ABILITIES ===');
+        console.log('Original abilities:', JSON.stringify(AgentToFlowJSON.abilities, null, 2));
+        
+        transformedAbilities = AgentToFlowJSON.abilities.map((ability: any) => {
+          const transformedAbility = {
+            id: ability.id,
+            title: ability.title,
+            type: ability.type,
+            group_name: ability.configured_action?.group_name || null,
+            description: ability.configured_action?.tool_description || null,
+            connector_id: ability.configured_action?.connector_id || null,
+          };
+          return transformedAbility;
+        });
+        
+        console.log('Transformed abilities:', JSON.stringify(transformedAbilities, null, 2));
+        // console.log('Number of abilities processed:', transformedAbilities.length);
+        console.log('=== END ABILITIES PROCESSING ===');
+      } else {
+        console.log('No abilities array found or abilities is not an array');
+      }
+
       // Validate request body
       if (!AgentToFlowJSON) {
         console.log('Request body is empty/undefined');
@@ -71,7 +96,8 @@ export class AppController {
         apiKey: process.env.KEY,
       });
 
-      const abilitiesJson = ReduceAbilityResJson();
+      // Use transformed abilities from request instead of dummy data
+      const abilitiesJson = { abilities: transformedAbilities };
       const triggers = ReduceTiggerResJson();
       const agentDescription = AgentToFlowJSON.description;
       const rawSchema = AgentToFlowJSON.input_schema;
