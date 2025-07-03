@@ -3,7 +3,7 @@ import { NodeSideBarData, FlowJson, ServiceStep, Node, Edge } from './type';
 
 @Injectable()
 export class FlowTransformationService {
-  serviceToFlow(data: ServiceStep[]): FlowJson {
+  serviceToFlow(data: ServiceStep[], abilitiesMap?: Map<string, string>): FlowJson {
     console.log(data);
     const nodes: Node[] = [];
     const arr: { source: string; target: string; label?: string }[] = [];
@@ -47,6 +47,16 @@ export class FlowTransformationService {
           // Skip this step's connections due to invalid format
         }
       }
+      
+      // Determine node type based on step type and ability mapping
+      let nodeType = 'logic'; // default
+      
+      if (ele.type === 'trigger') {
+        nodeType = 'trigger';
+      } else if (ele.type === 'ability' && abilitiesMap) {
+        nodeType = abilitiesMap.get(ele.title) || 'logic';
+      }
+      
       const temp: Node = {
         id: ele.id,
         position: {
@@ -59,6 +69,7 @@ export class FlowTransformationService {
           inputs: inputs,
           icon: ele.icon || 'zap', // Use the icon from Claude response, fallback to 'zap'
           isIsland: false,
+          type: nodeType, // Include the ability type from the original request, or 'logic' as default
         },
         type: 'custom',
       };

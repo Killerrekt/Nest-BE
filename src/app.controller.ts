@@ -64,6 +64,7 @@ export class AppController {
             group_name: ability.configured_action?.group_name || null,
             description: ability.configured_action?.tool_description || null,
             connector_id: ability.configured_action?.connector_id || null,
+            fullAgentData: ability.fullAgentData || null, // Include fullAgentData for agent-type abilities
           };
           return transformedAbility;
         });
@@ -104,8 +105,29 @@ export class AppController {
       const triggers = ReduceTiggerResJson();
       const agentDescription = AgentToFlowJSON.description;
 
-      const content = `You are an agent responsible for creating workflows that don't have any knowledge about ability and trigger other than the provided one.
+      const roleParsed = ConvertAgentInstructions(AgentToFlowJSON.role_setting || '');
+      const { background, instruction, output: outputFormatting } = roleParsed;
       
+      console.log('=== PARSED ROLE SETTINGS ===');
+      console.log('Background found:', !!background);
+      console.log('Instructions found:', !!instruction);
+      console.log('Output formatting found:', !!outputFormatting);
+      if (background) console.log('Background preview:', background.substring(0, 150) + '...');
+      if (instruction) console.log('Instructions preview:', instruction.substring(0, 150) + '...');
+      if (outputFormatting) console.log('Output preview:', outputFormatting.substring(0, 150) + '...');
+      console.log('=== END ROLE PARSING ===');
+
+      const content = `AGENT CONTEXT:
+      ${background ? `Background: ${background}` : ''}
+      
+      ${instruction ? `Instructions: ${instruction}` : ''}
+      
+      ${outputFormatting ? `Output Guidelines: ${outputFormatting}` : ''}
+      
+      WORKFLOW CREATION TASK:
+      You are responsible for creating workflows based on the agent context above. You can only use the abilities and triggers provided below.
+      
+      The output must be a JSON array showing the step-by-step breakdown of the workflow. Keep the number of steps to a minimum.
       IMPORTANT FORMAT REQUIREMENTS:
       - Return ONLY a JSON array of step objects
       - Each step MUST have target_id as an array of objects (NOT a flat array)
@@ -120,7 +142,8 @@ export class AppController {
           "target_id": [{"id": "step_2"}],
           "step_no": 1,
           "title": "HTTP Request Trigger",
-          "description": "This event is triggered when HTTP GET/POST requests are made to a webhook URL."
+          "description": "This event is triggered when HTTP GET/POST requests are made to a webhook URL.",
+          "icon": "webhook"
         },
         {
           "id": "step_2",
@@ -132,7 +155,8 @@ export class AppController {
           "step_no": 2,
           "condition": "some condition",
           "title": "Check Condition",
-          "description": "Checks some condition"
+          "description": "Checks some condition",
+          "icon": "git-branch"
         },
         {
           "id": "step_3",
@@ -140,9 +164,19 @@ export class AppController {
           "target_id": [],
           "step_no": 3,
           "title": "Some Action",
-          "description": "Does some action"
+          "description": "Does some action",
+          "icon": "zap"
         }
       ]
+
+      ICON SELECTION:
+      Choose appropriate icons from the lucide-react library based on the step type and functionality:
+      - For triggers: "play", "webhook", "mail", "calendar", "clock", "bell", "radio"
+      - For abilities/actions: "zap", "send", "database", "file-text", "image", "upload", "download", "edit", "trash", "copy", "search", "filter", "settings", "user", "users", "message-square", "phone", "video", "map", "shopping-cart", "credit-card", "lock", "unlock", "key", "shield", "eye", "eye-off", "heart", "star", "bookmark", "flag", "tag", "paperclip", "link", "external-link", "refresh", "rotate-cw", "arrow-right", "arrow-left", "arrow-up", "arrow-down", "plus", "minus", "x", "check", "alert-triangle", "alert-circle", "info", "help-circle"
+      - For conditionals: "git-branch", "split", "merge", "decision", "help-circle", "alert-triangle", "check-circle", "x-circle"
+      - For loops: "repeat", "rotate-cw", "refresh", "arrow-right-left", "repeat-1"
+      
+      Select the most contextually appropriate icon for each step based on its functionality.
       
       CRITICAL RULES FOR target_id:
       - NEVER use flat arrays like ["id", "step_2"] 
@@ -225,6 +259,7 @@ export class AppController {
                     condition: { type: Type.STRING },
                     title: { type: Type.STRING },
                     description: { type: Type.STRING },
+                    icon: { type: Type.STRING },
                   },
                   required: [
                     'id',
@@ -233,6 +268,7 @@ export class AppController {
                     'target_id',
                     'title',
                     'description',
+                    'icon',
                   ],
                 },
               },
@@ -291,8 +327,17 @@ export class AppController {
         return res.status(HttpStatus.NOT_ACCEPTABLE).json(data);
       }
 
+      // Create abilities mapping (title -> type) for preserving original ability types
+      const abilitiesMap = new Map<string, string>();
+      transformedAbilities.forEach(ability => {
+        // For agent type abilities, keep type as "agent", for others use the actual type
+        const abilityType = ability.type;
+        abilitiesMap.set(ability.title, abilityType);
+      });
+
       const transformedData = this.flowTransformationService.serviceToFlow(
         data as ServiceStep[],
+        abilitiesMap,
       );
 
       res.status(HttpStatus.CREATED).json({ data: transformedData });
@@ -326,6 +371,7 @@ export class AppController {
             group_name: ability.configured_action?.group_name || null,
             description: ability.configured_action?.tool_description || null,
             connector_id: ability.configured_action?.connector_id || null,
+            fullAgentData: ability.fullAgentData || null, // Include fullAgentData for agent-type abilities
           };
           return transformedAbility;
         });
@@ -447,7 +493,7 @@ export class AppController {
 
       const msg = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 2500,
+        max_tokens: 4000,
         messages: [{ role: 'user', content: content }],
       });
 
@@ -470,8 +516,17 @@ export class AppController {
         return res.status(HttpStatus.NOT_ACCEPTABLE).json(data);
       }
 
+      // Create abilities mapping (title -> type) for preserving original ability types
+      const abilitiesMap = new Map<string, string>();
+      transformedAbilities.forEach(ability => {
+        // For agent type abilities, keep type as "agent", for others use the actual type
+        const abilityType = ability.type;
+        abilitiesMap.set(ability.title, abilityType);
+      });
+
       const transformedData = this.flowTransformationService.serviceToFlow(
         data as ServiceStep[],
+        abilitiesMap,
       );
 
       res.status(HttpStatus.CREATED).json({ data: transformedData });

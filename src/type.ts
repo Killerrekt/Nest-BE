@@ -71,6 +71,7 @@ export interface Node {
     inputs: NodeSideBarData[];
     icon: string;
     isIsland: boolean;
+    type?: string;
   };
   type: string;
 }
