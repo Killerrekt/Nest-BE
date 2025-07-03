@@ -91,6 +91,7 @@ export interface ServiceStep {
   target_id: Array<{
     id: string;
     label?: string;
+    labelMain?: string;
   }>;
   step_no: number;
   condition?: string;

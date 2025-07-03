@@ -105,16 +105,30 @@ export class AppController {
       const triggers = ReduceTiggerResJson();
       const agentDescription = AgentToFlowJSON.description;
 
-      const roleParsed = ConvertAgentInstructions(AgentToFlowJSON.role_setting || '');
+      const roleParsed = ConvertAgentInstructions(
+        AgentToFlowJSON.role_setting || '',
+      );
       const { background, instruction, output: outputFormatting } = roleParsed;
-      
+
       console.log('=== PARSED ROLE SETTINGS ===');
       console.log('Background found:', !!background);
       console.log('Instructions found:', !!instruction);
       console.log('Output formatting found:', !!outputFormatting);
-      if (background) console.log('Background preview:', background.substring(0, 150) + '...');
-      if (instruction) console.log('Instructions preview:', instruction.substring(0, 150) + '...');
-      if (outputFormatting) console.log('Output preview:', outputFormatting.substring(0, 150) + '...');
+      if (background)
+        console.log(
+          'Background preview:',
+          background.substring(0, 150) + '...',
+        );
+      if (instruction)
+        console.log(
+          'Instructions preview:',
+          instruction.substring(0, 150) + '...',
+        );
+      if (outputFormatting)
+        console.log(
+          'Output preview:',
+          outputFormatting.substring(0, 150) + '...',
+        );
       console.log('=== END ROLE PARSING ===');
 
       const content = `AGENT CONTEXT:
@@ -139,7 +153,7 @@ export class AppController {
         {
           "id": "trigger_1",
           "type": "trigger",
-          "target_id": [{"id": "step_2"}],
+          "target_id": [{"id": "step_2", "labelMain": "Lead is Qualified?", "label" : "yes"}],
           "step_no": 1,
           "title": "HTTP Request Trigger",
           "description": "This event is triggered when HTTP GET/POST requests are made to a webhook URL.",
@@ -149,8 +163,8 @@ export class AppController {
           "id": "step_2",
           "type": "if", 
           "target_id": [
-            {"id": "step_3", "label": "true"},
-            {"id": "step_4", "label": "false"}
+            {"id": "step_3","labelMain" : "Was content uploaded successfully?" ,"label": "yes"},
+            {"id": "step_4", "labelMain" : "Was content uploaded successfully? ","label": "no"}
           ],
           "step_no": 2,
           "condition": "some condition",
@@ -180,10 +194,10 @@ export class AppController {
       
       CRITICAL RULES FOR target_id:
       - NEVER use flat arrays like ["id", "step_2"] 
-      - ALWAYS use object arrays like [{"id": "step_2"}]
+      - ALWAYS use object arrays like [{"id": "step_2", "labelMain": "Lead is Qualified?", "label" : "yes"}]
       - For no connections: "target_id": []
-      - For one connection: "target_id": [{"id": "next_step_id"}]
-      - For multiple connections: "target_id": [{"id": "step1", "label": "true"}, {"id": "step2", "label": "false"}]
+      - For one connection: "target_id": [{"id": "next_step_id", "labelMain": "Lead is Qualified?", "label" : "yes"}]
+      - For multiple connections: "target_id": [{"id": "step1", "labelMain" : "Was Email send successfully? ","label": "yes"}, {"id": "step2", "labelMain" : "Did the website get updated?","label": "no"}]
 
       Each workflow should start by a trigger and only use the triggers which are provided in the following json :- ${JSON.stringify(triggers)}.
       The step containing trigger should have following value along with the general format =>
@@ -215,9 +229,9 @@ export class AppController {
       Here is a text :- ${agentDescription}. From this extract a basic workflow and create it based on the rules declared above.
       
       REMINDER: Your response must be a JSON array where each step has target_id as an array of objects:
-      ✅ CORRECT: "target_id": [{"id": "next_step"}]
+      ✅ CORRECT: "target_id": [{"id": "next_step", "labelMain": "Lead is Qualified?", "label" : "yes"}]
       ❌ WRONG: "target_id": ["id", "next_step"]
-      ✅ CORRECT: "target_id": [{"id": "step1", "label": "yes"}, {"id": "step2", "label": "no"}]  
+      ✅ CORRECT: "target_id": [{"id": "step1","labelMain" : "Was Email send successfully? ", "label": "yes"}, {"id": "step2","labelMain" : "Was Email send successfully? ", "label": "no"}]  
       ❌ WRONG: "target_id": ["id", "step1", "label", "yes", "id", "step2", "label", "no"]
     `;
 
@@ -240,20 +254,28 @@ export class AppController {
                       items: {
                         type: Type.OBJECT,
                         properties: {
-                          id: { 
+                          id: {
                             type: Type.STRING,
-                            description: 'The ID of the target step'
+                            description: 'The ID of the target step',
                           },
-                          label: { 
+                          labelMain: {
                             type: Type.STRING,
-                            description: 'Optional label describing the connection'
+                            description:
+                              "Define what action is done in the form of a questions. like 'Did email send successfully?'",
+                          },
+                          label: {
+                            type: Type.STRING,
+                            description:
+                              'Answer the question in labelMain in minimal words. ',
                           },
                         },
-                        required: ['id'],
+                        required: ['id', 'labelMain', 'label'],
                         additionalProperties: false,
-                        description: 'A target object with id and optional label'
+                        description:
+                          'A target object with id and optional label',
                       },
-                      description: 'Array of target connection objects (NOT a flat array of strings)',
+                      description:
+                        'Array of target connection objects (NOT a flat array of strings)',
                     },
                     step_no: { type: Type.INTEGER },
                     condition: { type: Type.STRING },
@@ -293,24 +315,28 @@ export class AppController {
 
       let data = JSON.parse(response.text);
       console.log('AI Response (raw):', data);
-      
+
       // Post-process the data to fix target_id JSON strings
       if (Array.isArray(data)) {
         data = data.map((step: any) => {
           if (step.target_id && Array.isArray(step.target_id)) {
-            step.target_id = step.target_id.map((target: any) => {
-              // If target is a JSON string, parse it to object
-              if (typeof target === 'string' && target.startsWith('{')) {
-                try {
-                  return JSON.parse(target);
-                } catch (e) {
-                  console.warn(`Failed to parse target JSON string: ${target}`);
-                  return null;
+            step.target_id = step.target_id
+              .map((target: any) => {
+                // If target is a JSON string, parse it to object
+                if (typeof target === 'string' && target.startsWith('{')) {
+                  try {
+                    return JSON.parse(target);
+                  } catch (e) {
+                    console.warn(
+                      `Failed to parse target JSON string: ${target}`,
+                    );
+                    return null;
+                  }
                 }
-              }
-              // If it's already an object, return as is
-              return target;
-            }).filter(Boolean); // Remove any null values from failed parsing
+                // If it's already an object, return as is
+                return target;
+              })
+              .filter(Boolean); // Remove any null values from failed parsing
           }
           return step;
         });
@@ -329,7 +355,7 @@ export class AppController {
 
       // Create abilities mapping (title -> type) for preserving original ability types
       const abilitiesMap = new Map<string, string>();
-      transformedAbilities.forEach(ability => {
+      transformedAbilities.forEach((ability) => {
         // For agent type abilities, keep type as "agent", for others use the actual type
         const abilityType = ability.type;
         abilitiesMap.set(ability.title, abilityType);
@@ -339,6 +365,8 @@ export class AppController {
         data as ServiceStep[],
         abilitiesMap,
       );
+
+      console.log('Response :- ', response);
 
       res.status(HttpStatus.CREATED).json({ data: transformedData });
       return transformedData;
@@ -400,18 +428,32 @@ export class AppController {
       const abilitiesJson = { abilities: transformedAbilities };
       const triggers = ReduceTiggerResJson();
       const agentDescription = AgentToFlowJSON.description;
-      
+
       // Parse role settings using the agent role parser
-      const roleParsed = ConvertAgentInstructions(AgentToFlowJSON.role_setting || '');
+      const roleParsed = ConvertAgentInstructions(
+        AgentToFlowJSON.role_setting || '',
+      );
       const { background, instruction, output: outputFormatting } = roleParsed;
-      
+
       console.log('=== PARSED ROLE SETTINGS ===');
       console.log('Background found:', !!background);
       console.log('Instructions found:', !!instruction);
       console.log('Output formatting found:', !!outputFormatting);
-      if (background) console.log('Background preview:', background.substring(0, 150) + '...');
-      if (instruction) console.log('Instructions preview:', instruction.substring(0, 150) + '...');
-      if (outputFormatting) console.log('Output preview:', outputFormatting.substring(0, 150) + '...');
+      if (background)
+        console.log(
+          'Background preview:',
+          background.substring(0, 150) + '...',
+        );
+      if (instruction)
+        console.log(
+          'Instructions preview:',
+          instruction.substring(0, 150) + '...',
+        );
+      if (outputFormatting)
+        console.log(
+          'Output preview:',
+          outputFormatting.substring(0, 150) + '...',
+        );
       console.log('=== END ROLE PARSING ===');
 
       const content = `AGENT CONTEXT:
@@ -433,6 +475,7 @@ export class AppController {
         "target_id": [
           {
             "id": "string",        // ID of the target step
+            "labelMain" : "string" // 
             "label": "string"      // Optional label to explain the connection
           }
         ],
@@ -501,7 +544,10 @@ export class AppController {
       console.log('=== CLAUDE TOKEN USAGE ===');
       console.log('Input tokens:', msg.usage.input_tokens);
       console.log('Output tokens:', msg.usage.output_tokens);
-      console.log('Total tokens:', msg.usage.input_tokens + msg.usage.output_tokens);
+      console.log(
+        'Total tokens:',
+        msg.usage.input_tokens + msg.usage.output_tokens,
+      );
       console.log('=== END TOKEN USAGE ===');
 
       let data = [];
@@ -518,7 +564,7 @@ export class AppController {
 
       // Create abilities mapping (title -> type) for preserving original ability types
       const abilitiesMap = new Map<string, string>();
-      transformedAbilities.forEach(ability => {
+      transformedAbilities.forEach((ability) => {
         // For agent type abilities, keep type as "agent", for others use the actual type
         const abilityType = ability.type;
         abilitiesMap.set(ability.title, abilityType);
