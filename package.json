@@ -21,11 +21,13 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.55.1",
+    "@dqbd/tiktoken": "^1.0.21",
     "@google/genai": "^1.6.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "dotenv": "^16.5.0",
+    "openai": "^5.8.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
