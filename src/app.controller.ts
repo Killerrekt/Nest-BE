@@ -35,36 +35,29 @@ export class AppController {
     @Res() res: Response,
   ): Promise<any> {
     try {
-      // Debug log to see what we're receiving
-      console.log('=== REQUEST DEBUG ===');
-      console.log(
-        'Received request body:',
-        JSON.stringify(AgentToFlowJSON, null, 2),
-      );
-      console.log('Type of AgentToFlowJSON:', typeof AgentToFlowJSON);
-      console.log('AgentToFlowJSON exists:', !!AgentToFlowJSON);
-
       // Process abilities array
       let transformedAbilities: any[] = [];
       if (
         AgentToFlowJSON.abilities &&
         Array.isArray(AgentToFlowJSON.abilities)
       ) {
-        console.log('=== PROCESSING ABILITIES ===');
-        console.log(
-          'Original abilities:',
-          JSON.stringify(AgentToFlowJSON.abilities, null, 2),
-        );
-
         transformedAbilities = AgentToFlowJSON.abilities.map((ability: any) => {
+          let temp = [];
+          if (ability.fullAgentData && ability.fullAgentData.abilities) {
+            temp = ability.fullAgentData.abilities.map((ele: any) => {
+              const agentdata = {
+                title: ele.title,
+                type: ele.type,
+                description: ele.configured_action?.tool_description || null,
+              };
+              return agentdata;
+            });
+          }
           const transformedAbility = {
-            id: ability.id,
             title: ability.title,
             type: ability.type,
-            group_name: ability.configured_action?.group_name || null,
             description: ability.configured_action?.tool_description || null,
-            connector_id: ability.configured_action?.connector_id || null,
-            fullAgentData: ability.fullAgentData || null, // Include fullAgentData for agent-type abilities
+            fullAgentData: temp,
           };
           return transformedAbility;
         });
@@ -102,7 +95,7 @@ export class AppController {
 
       // Use transformed abilities from request instead of dummy data
       const abilitiesJson = { abilities: transformedAbilities };
-      const triggers = ReduceTiggerResJson();
+      const triggers = ReduceTiggerResJson(AgentToFlowJSON.trigger);
       const agentDescription = AgentToFlowJSON.description;
 
       const roleParsed = ConvertAgentInstructions(
@@ -110,33 +103,10 @@ export class AppController {
       );
       const { background, instruction, output: outputFormatting } = roleParsed;
 
-      console.log('=== PARSED ROLE SETTINGS ===');
-      console.log('Background found:', !!background);
-      console.log('Instructions found:', !!instruction);
-      console.log('Output formatting found:', !!outputFormatting);
-      if (background)
-        console.log(
-          'Background preview:',
-          background.substring(0, 150) + '...',
-        );
-      if (instruction)
-        console.log(
-          'Instructions preview:',
-          instruction.substring(0, 150) + '...',
-        );
-      if (outputFormatting)
-        console.log(
-          'Output preview:',
-          outputFormatting.substring(0, 150) + '...',
-        );
-      console.log('=== END ROLE PARSING ===');
-
       const content = `AGENT CONTEXT:
       ${background ? `Background: ${background}` : ''}
       
       ${instruction ? `Instructions: ${instruction}` : ''}
-      
-      ${outputFormatting ? `Output Guidelines: ${outputFormatting}` : ''}
       
       WORKFLOW CREATION TASK:
       You are responsible for creating workflows based on the agent context above. You can only use the abilities and triggers provided below.
@@ -145,8 +115,6 @@ export class AppController {
       IMPORTANT FORMAT REQUIREMENTS:
       - Return ONLY a JSON array of step objects
       - Each step MUST have target_id as an array of objects (NOT a flat array)
-      
-      Here is the EXACT format you must follow:
       
       EXAMPLE OF CORRECT OUTPUT:
       [
@@ -185,39 +153,22 @@ export class AppController {
 
       ICON SELECTION:
       Choose appropriate icons from the lucide-react library based on the step type and functionality:
-      - For triggers: "play", "webhook", "mail", "calendar", "clock", "bell", "radio"
+      - For triggers: "play"
       - For abilities/actions: "zap", "send", "database", "file-text", "image", "upload", "download", "edit", "trash", "copy", "search", "filter", "settings", "user", "users", "message-square", "phone", "video", "map", "shopping-cart", "credit-card", "lock", "unlock", "key", "shield", "eye", "eye-off", "heart", "star", "bookmark", "flag", "tag", "paperclip", "link", "external-link", "refresh", "rotate-cw", "arrow-right", "arrow-left", "arrow-up", "arrow-down", "plus", "minus", "x", "check", "alert-triangle", "alert-circle", "info", "help-circle"
-      - For conditionals: "git-branch", "split", "merge", "decision", "help-circle", "alert-triangle", "check-circle", "x-circle"
-      - For loops: "repeat", "rotate-cw", "refresh", "arrow-right-left", "repeat-1"
-      
-      Select the most contextually appropriate icon for each step based on its functionality.
+      - For conditionals: "git-branch"
+      - For loops: "repeat"
       
       CRITICAL RULES FOR target_id:
-      - NEVER use flat arrays like ["id", "step_2"] 
-      - ALWAYS use object arrays like [{"id": "step_2", "labelMain": "Lead is Qualified?", "label" : "yes"}]
+      - IMPORTANT: ALWAYS use object arrays like [{"id": "step_2", "labelMain": "Lead is Qualified?", "label" : "yes"}]
       - For no connections: "target_id": []
       - For one connection: "target_id": [{"id": "next_step_id", "labelMain": "Lead is Qualified?", "label" : "yes"}]
       - For multiple connections: "target_id": [{"id": "step1", "labelMain" : "Was Email send successfully? ","label": "yes"}, {"id": "step2", "labelMain" : "Did the website get updated?","label": "no"}]
 
-      Each workflow should start by a trigger and only use the triggers which are provided in the following json :- ${JSON.stringify(triggers)}.
-      The step containing trigger should have following value along with the general format =>
-      {
-        type : "trigger",
-        step_no : 1,
-        title : string // Don't create on your own, get it and copy it as it is from the json.
-        description : string // copy it as it is from the json and don't change it.
-      }
-      After creating this, check if the trigger title is present in the json or not. You can check the presence by performing an exact string match of the title.
+      Each workflow starts with a trigger and is followed by a set of abilities. Cause of this the step_no of trigger is always 1. Also use the title and description provided in the following ability to populated the corresponding fields.
+      Here is the trigger JSON :- ${JSON.stringify(triggers)}
+      Here is the ability JSON :- ${JSON.stringify(abilitiesJson)}
 
-      The ability provided in the following json :- ${JSON.stringify(abilitiesJson)}.
-      The step containing ability should have following value along with the general format =>
-      {
-        type : "ability",
-        title : string // Don't create on your own, get it and copy it as it is from the json.
-        description : string // copy it as it is from the json and don't change it.
-      }
-
-      If you are using a loop, indicate the end of the loop by pointing the target_id back to the loop starting id.
+      When using a loop, indicate the end of the loop by pointing the target_id back to the loop starting id.
 
       IMPORTANT: If you are able to create a workflow, return ONLY the array of steps directly (not wrapped in any object). 
       If you cannot create a workflow, return ONLY this format:
@@ -229,83 +180,95 @@ export class AppController {
       Here is a text :- ${agentDescription}. From this extract a basic workflow and create it based on the rules declared above.
       
       REMINDER: Your response must be a JSON array where each step has target_id as an array of objects:
-      ✅ CORRECT: "target_id": [{"id": "next_step", "labelMain": "Lead is Qualified?", "label" : "yes"}]
-      ❌ WRONG: "target_id": ["id", "next_step"]
-      ✅ CORRECT: "target_id": [{"id": "step1","labelMain" : "Was Email send successfully? ", "label": "yes"}, {"id": "step2","labelMain" : "Was Email send successfully? ", "label": "no"}]  
-      ❌ WRONG: "target_id": ["id", "step1", "label", "yes", "id", "step2", "label", "no"]
+      CORRECT: "target_id": [{"id": "step1","labelMain" : "Was Email send successfully? ", "label": "yes"}, {"id": "step2","labelMain" : "Was Email send successfully? ", "label": "no"}]  
+      WRONG: "target_id": ["id", "step1", "label", "yes", "id", "step2", "label", "no"]
     `;
+
+      console.log('content : ', content);
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: content,
         config: {
           responseMimeType: 'application/json',
-          responseSchema: {
-            oneOf: [
-              {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    id: { type: Type.STRING },
-                    type: { type: Type.STRING },
-                    target_id: {
-                      type: Type.ARRAY,
-                      items: {
-                        type: Type.OBJECT,
-                        properties: {
-                          id: {
-                            type: Type.STRING,
-                            description: 'The ID of the target step',
-                          },
-                          labelMain: {
-                            type: Type.STRING,
-                            description:
-                              "Define what action is done in the form of a questions. like 'Did email send successfully?'",
-                          },
-                          label: {
-                            type: Type.STRING,
-                            description:
-                              'Answer the question in labelMain in minimal words. ',
-                          },
-                        },
-                        required: ['id', 'labelMain', 'label'],
-                        additionalProperties: false,
-                        description:
-                          'A target object with id and optional label',
-                      },
-                      description:
-                        'Array of target connection objects (NOT a flat array of strings)',
-                    },
-                    step_no: { type: Type.INTEGER },
-                    condition: { type: Type.STRING },
-                    title: { type: Type.STRING },
-                    description: { type: Type.STRING },
-                    icon: { type: Type.STRING },
-                  },
-                  required: [
-                    'id',
-                    'type',
-                    'step_no',
-                    'target_id',
-                    'title',
-                    'description',
-                    'icon',
-                  ],
-                },
-              },
-              {
-                type: Type.OBJECT,
-                properties: {
-                  status: { type: Type.STRING },
-                  error: { type: Type.STRING },
-                },
-                required: ['status', 'error'],
-              },
-            ],
-          },
+          // responseSchema: {
+          //   oneOf: [
+          //     {
+          //       type: Type.ARRAY,
+          //       items: {
+          //         type: Type.OBJECT,
+          //         properties: {
+          //           id: { type: Type.STRING },
+          //           type: { type: Type.STRING },
+          //           target_id: {
+          //             type: Type.ARRAY,
+          //             items: {
+          //               type: Type.OBJECT,
+          //               properties: {
+          //                 id: {
+          //                   type: Type.STRING,
+          //                   description: 'The ID of the target step',
+          //                 },
+          //                 labelMain: {
+          //                   type: Type.STRING,
+          //                   description:
+          //                     "Define what action is done in the form of a questions. like 'Did email send successfully?'",
+          //                 },
+          //                 label: {
+          //                   type: Type.STRING,
+          //                   description:
+          //                     'Answer the question in labelMain in minimal words. ',
+          //                 },
+          //               },
+          //               required: ['id', 'labelMain', 'label'],
+          //               additionalProperties: false,
+          //               description:
+          //                 'A target object with id and optional label',
+          //             },
+          //             description:
+          //               'Array of target connection objects (NOT a flat array of strings)',
+          //           },
+          //           step_no: { type: Type.INTEGER },
+          //           condition: { type: Type.STRING },
+          //           title: { type: Type.STRING },
+          //           description: { type: Type.STRING },
+          //           icon: { type: Type.STRING },
+          //         },
+          //         required: [
+          //           'id',
+          //           'type',
+          //           'step_no',
+          //           'target_id',
+          //           'title',
+          //           'description',
+          //           'icon',
+          //         ],
+          //       },
+          //     },
+          //     {
+          //       type: Type.OBJECT,
+          //       properties: {
+          //         status: { type: Type.STRING },
+          //         error: { type: Type.STRING },
+          //       },
+          //       required: ['status', 'error'],
+          //     },
+          //   ],
+          // },
         },
       });
+
+      // console.log(process.env.CLAUDE_KEY);
+      // const anthropic = new Anthropic({
+      //   apiKey: process.env.CLAUDE_KEY,
+      // });
+
+      // const msg = await anthropic.messages.countTokens({
+      //   model: 'claude-sonnet-4-20250514',
+      //   messages: [{ role: 'user', content: content }],
+      // });
+
+      // console.log('claude token count : ', msg);
 
       if (!response.text) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -314,7 +277,6 @@ export class AppController {
       }
 
       let data = JSON.parse(response.text);
-      console.log('AI Response (raw):', data);
 
       // Post-process the data to fix target_id JSON strings
       if (Array.isArray(data)) {
@@ -340,7 +302,6 @@ export class AppController {
           }
           return step;
         });
-        console.log('AI Response (processed):', data);
       }
 
       if (data.status === '400') {
@@ -426,7 +387,7 @@ export class AppController {
 
       // Use transformed abilities from request instead of dummy data
       const abilitiesJson = { abilities: transformedAbilities };
-      const triggers = ReduceTiggerResJson();
+      const triggers = ReduceTiggerResJson(AgentToFlowJSON.trigger);
       const agentDescription = AgentToFlowJSON.description;
 
       // Parse role settings using the agent role parser

@@ -1070,38 +1070,12 @@ export function ReduceAbilityResJson() {
   return reducesize;
 }
 
-export function ReduceTiggerResJson() {
-  const temp: any[] = [];
-  const trigger = [
-    {
-      id: 'd457d353d94f424385fa51c83196e8de',
-      origin_id: '1839be436a644bb5bd36c9e9fd74b06c',
-      title: 'HTTP Request Trigger',
-      description:
-        'This event is triggered when HTTP GET/POST  requests are made to a webhook URL.',
-      auth: '',
-      type: 'instant',
-      connector_id: '77068a27c78c44ecb0ab428dc44ddf1b',
-      input_schema:
-        '{\n  "type": "object",\n  "required": [\n    "method"\n  ],\n  "properties": {\n    "method": {\n      "type": "string",\n      "title": "Select Method",\n      "minLength": 3,\n      "default": "GET/POST",\n      "enum": [\n        "GET/POST"\n      ],\n      "description": "Select a method."\n    }\n  }\n}',
-      group_name: 'http',
-      help: 'https://www.contentstack.com/docs/developers/automation-hub-connectors/http-trigger/',
-      version: 5,
-      published: true,
-      updated_at: '2023-06-22T07:11:05.703Z',
-      created_at: '2021-08-11T07:06:24.153Z',
-    },
-  ];
-  trigger.map((ele) =>
-    temp.push({
-      title: ele.title,
-      description: ele.description,
-      input_schema: ele.input_schema,
-    }),
-  );
+export function ReduceTiggerResJson(trigger: any) {
+  const temp = {
+    title: trigger.title,
+    description: trigger.description,
+  };
   return temp;
 }
 
 const abilitiesJson = ReduceAbilityResJson();
-
-const triggers = ReduceTiggerResJson();
