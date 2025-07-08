@@ -585,4 +585,113 @@ export class AppController {
       });
     }
   }
+
+  @Post('flow-to-steps')
+  async convertFlowToSteps(
+    @Body() flowData: any,
+    @Res() res: Response,
+  ): Promise<any> {
+    try {
+      console.log('=== FLOW TO STEPS CONVERSION ===');
+      console.log('Input flow data:', JSON.stringify(flowData, null, 2));
+
+      if (!flowData.nodes || !flowData.edges) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          error: 'Invalid flow data. Expected nodes and edges properties.',
+        });
+      }
+
+      const steps = this.flowTransformationService.flowToService(flowData);
+
+      console.log('Converted steps:', JSON.stringify(steps, null, 2));
+
+      console.log('=== GENERATING USER PROMPT ===');
+      const userPrompt = await this.generateUserPromptFromSteps(steps);
+      console.log('Generated user prompt:', userPrompt);
+      console.log('=== END CONVERSION ===');
+
+      res.status(HttpStatus.OK).json({
+        steps: steps,
+        userPrompt: userPrompt,
+        message:
+          'Successfully converted flow to steps and generated user prompt',
+      });
+      return { steps, userPrompt };
+    } catch (error) {
+      console.error('Error in flow-to-steps conversion:', error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: 'Internal server error during conversion.',
+        details: error.message,
+      });
+    }
+  }
+
+  private async generateUserPromptFromSteps(steps: any[]): Promise<string> {
+    try {
+      const workflowSummary = this.createWorkflowSummary(steps);
+
+      const content = `You are an expert AI assistant that helps users create automation workflows. 
+
+Based on the following detailed workflow steps, generate a natural, conversational user prompt that someone would give to an AI agent to create this exact workflow.
+
+WORKFLOW STEPS:
+${workflowSummary}
+
+Requirements for the user prompt:
+1. Make it sound natural and conversational, as if a user is describing what they want
+2. Include the key business logic and decision points
+3. Mention the specific actions and integrations needed
+4. Include the conditional logic and branching
+5. Keep it concise but comprehensive
+6. Focus on the business outcome and user intent
+7. Don't use technical jargon - make it user-friendly
+
+Generate a user prompt that would result in creating this workflow. The prompt should be something a non-technical user would naturally say when asking for this automation.
+
+Return only the user prompt, nothing else.`;
+
+      const ai = new GoogleGenAI({
+        apiKey: process.env.KEY,
+      });
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: content,
+        config: {
+          responseMimeType: 'text/plain',
+        },
+      });
+
+      if (!response.text) {
+        throw new Error('No response received from Gemini API');
+      }
+
+      return response.text.trim();
+    } catch (error) {
+      console.error('Error generating user prompt:', error);
+      throw new Error('Failed to generate user prompt from workflow steps');
+    }
+  }
+
+  private createWorkflowSummary(steps: any[]): string {
+    return steps
+      .map((step, index) => {
+        let summary = `Step ${step.step_no}: ${step.title}\n`;
+        summary += `  Description: ${step.description}\n`;
+        summary += `  Type: ${step.type}\n`;
+
+        if (step.condition) {
+          summary += `  Condition: ${step.condition}\n`;
+        }
+
+        if (step.target_id && step.target_id.length > 0) {
+          summary += `  Next Steps: ${step.target_id
+            .map((t) => (t.label ? `${t.id} (${t.label})` : t.id))
+            .join(', ')}\n`;
+        }
+
+        return summary;
+      })
+      .join('\n');
+  }
 }

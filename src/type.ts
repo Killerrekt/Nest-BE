@@ -83,6 +83,9 @@ export interface Edge {
   target: string;
   targetHandle: string;
   label?: string;
+  data?: {
+    label?: string;
+  };
 }
 
 export interface ServiceStep {
@@ -99,6 +102,7 @@ export interface ServiceStep {
   description: string;
   action?: string;
   icon?: string;
+  abilityType?: string;
 }
 
 export interface FlowJson {
