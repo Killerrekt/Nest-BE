@@ -65,12 +65,14 @@ export class FlowTransformationService {
       }
 
       // Determine node type based on step type and ability mapping
-      let nodeType = 'logic'; // default
+      let nodeType = 'logic';
 
       if (ele.type === 'trigger') {
         nodeType = 'trigger';
       } else if (ele.type === 'ability' && abilitiesMap) {
         nodeType = abilitiesMap.get(ele.title) || 'logic';
+      } else if (ele.type === 'agent') {
+        nodeType = 'agent'; // Preserve agent type
       }
 
       const temp: Node = {
@@ -86,6 +88,7 @@ export class FlowTransformationService {
           icon: ele.icon || 'zap', // Use the icon from Claude response, fallback to 'zap'
           isIsland: false,
           type: nodeType, // Include the ability type from the original request, or 'logic' as default
+          abilityType: ele.abilityType, // Preserve the original ability type
         },
         type: 'custom',
       };

@@ -56,7 +56,7 @@ export interface AgentConfig {
 export interface NodeSideBarData {
   title: string;
   type: string;
-  placeholder: string;
+  placeholder?: string;
 }
 
 export interface Node {
@@ -72,6 +72,7 @@ export interface Node {
     icon: string;
     isIsland: boolean;
     type?: string;
+    abilityType?: string; // Add abilityType to preserve original ability type
   };
   type: string;
 }

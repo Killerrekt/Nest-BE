@@ -78,6 +78,7 @@ export const Prompt = {
       Each workflow starts with a trigger and is followed by a set of abilities. Cause of this the step_no of trigger is always 1. Also use the title and description provided in the following ability to populated the corresponding fields.
       Here is the trigger JSON :- ${JSON.stringify(triggers)}
       Here is the ability JSON :- ${JSON.stringify(abilitiesJson)}
+      If the type of the ability is "agent", then for that ability, set the type as "agent".
 
       When using a loop, indicate the end of the loop by pointing the target_id back to the loop starting id.
 
@@ -229,10 +230,15 @@ export const Prompt = {
       The ability provided in the following json :- ${JSON.stringify(abilitiesJson)}.
       The step containing ability should have following value along with the general format =>
       {
-        type : "ability",
+        type : "ability" | "agent", // Use "agent" if the ability type is "agent"
         title : string // Don't create on your own, get it and copy it as it is from the json.
         description : string // copy it as it is from the json and don't change it.
       }
+
+      For agent-type abilities:
+      - Set type as "agent" 
+      - Use the agent's title and description
+      - The agent's nested abilities will be available in fullAgentData if needed
 
       If you are using a loop, indicate the end of the loop by pointing the target_id back to the loop starting id.
 

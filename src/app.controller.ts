@@ -28,26 +28,35 @@ export class AppController {
     private readonly flowTransformationService: FlowTransformationService,
   ) {}
 
-  private GetPrompt(AgentToFlowJSON: any, res: Response) {
+  private GetPrompt(AgentToFlowJSON: any, res: Response, model: string) {
     let transformedAbilities: any[] = [];
     if (AgentToFlowJSON.abilities && Array.isArray(AgentToFlowJSON.abilities)) {
       transformedAbilities = AgentToFlowJSON.abilities.map((ability: any) => {
-        let temp = [];
-        if (ability.fullAgentData && ability.fullAgentData.abilities) {
-          temp = ability.fullAgentData.abilities.map((ele: any) => {
-            const agentdata = {
-              title: ele.title,
-              type: ele.type,
-              description: ele.configured_action?.tool_description || null,
-            };
-            return agentdata;
-          });
+        let nestedAbilities = [];
+        if (
+          ability.type === 'agent' &&
+          ability.fullAgentData &&
+          ability.fullAgentData.abilities
+        ) {
+          nestedAbilities = ability.fullAgentData.abilities.map((ele: any) => ({
+            title: ele.title,
+            type: ele.type,
+            description:
+              ele.configured_action?.description ||
+              ele.configured_action?.tool_description ||
+              null,
+          }));
         }
         const transformedAbility = {
           title: ability.title,
           type: ability.type,
-          description: ability.configured_action?.tool_description || null,
-          fullAgentData: temp,
+          description:
+            ability.type === 'agent' && ability.fullAgentData
+              ? ability.fullAgentData.description
+              : ability.configured_action?.description ||
+                ability.configured_action?.tool_description ||
+                null,
+          fullAgentData: nestedAbilities,
         };
         return transformedAbility;
       });
@@ -99,7 +108,18 @@ export class AppController {
       agentDescription: agentDescription,
     };
 
-    const content = Prompt.gpt(input);
+    let content = '';
+    switch (model) {
+      case 'gpt':
+        content = Prompt.gpt(input);
+        break;
+      case 'claude':
+        content = Prompt.claude(input);
+        break;
+      default:
+        content = Prompt.gemini(input);
+        break;
+    }
     return [content, transformedAbilities];
   }
 
@@ -154,14 +174,14 @@ export class AppController {
     return transformedData;
   }
 
-  @Post('generate')
+  @Post()
   async generateWorkflow(
     @Body() AgentToFlowJSON: any,
     @Res() res: Response,
     @Query('model') model: string,
   ): Promise<any> {
     try {
-      const result = this.GetPrompt(AgentToFlowJSON, res);
+      const result = this.GetPrompt(AgentToFlowJSON, res, model);
       if (!Array.isArray(result)) {
         return;
       }
@@ -355,7 +375,7 @@ export class AppController {
 
     // Use transformed abilities from request instead of dummy data
     const abilitiesJson = { abilities: transformedAbilities };
-    const triggers = ReduceTiggerResJson(AgentToFlowJSON.trigger);
+    const triggers = ReduceTiggerResJson(AgentToFlowJSON.trigger_details);
     const agentDescription = AgentToFlowJSON.description;
 
     // Parse role settings using the agent role parser
