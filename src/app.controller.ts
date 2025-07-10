@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Query,
+  Headers,
   Req,
   Res,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { ConvertAgentInstructions } from './agent-role-parser';
 import OpenAI from 'openai';
 import { encoding_for_model } from '@dqbd/tiktoken';
 import { Prompt, PromptProps } from './prompt';
+import axios from 'axios';
 
 @Controller()
 export class AppController {
@@ -28,10 +30,36 @@ export class AppController {
     private readonly flowTransformationService: FlowTransformationService,
   ) {}
 
-  private GetPrompt(AgentToFlowJSON: any, res: Response, model: string) {
+  private async GetPrompt(
+    AgentToFlowJSON: any,
+    res: Response,
+    model: string,
+    auth: string,
+    org: string,
+  ) {
+    const abilityList: Map<string, any> = new Map();
+
+    await axios
+      .get(
+        `http://localhost:3002/projects/${AgentToFlowJSON.project_id}/agents/abilities`,
+        {
+          headers: {
+            organization_uid: org,
+            authtoken: auth,
+          },
+        },
+      )
+      .then((res) => {
+        res.data.abilities.forEach((ele) => {
+          console.log(ele);
+          abilityList.set(ele.title, ele);
+        });
+      });
+
     let transformedAbilities: any[] = [];
     if (AgentToFlowJSON.abilities && Array.isArray(AgentToFlowJSON.abilities)) {
-      transformedAbilities = AgentToFlowJSON.abilities.map((ability: any) => {
+      transformedAbilities = AgentToFlowJSON.abilities.map((temp: string) => {
+        const ability = abilityList.get(temp);
         let nestedAbilities = [];
         if (
           ability.type === 'agent' &&
@@ -177,17 +205,28 @@ export class AppController {
   @Post()
   async generateWorkflow(
     @Body() AgentToFlowJSON: any,
-    @Res() res: Response,
+    @Headers('authToken') authToken: string,
+    @Headers('organization_uid') orgId: string,
+    @Res()
+    res: Response,
     @Query('model') model: string,
   ): Promise<any> {
     try {
-      const result = this.GetPrompt(AgentToFlowJSON, res, model);
+      const result = await this.GetPrompt(
+        AgentToFlowJSON,
+        res,
+        model,
+        authToken,
+        orgId,
+      );
+
       if (!Array.isArray(result)) {
         return;
       }
       const content = result[0];
 
       let llm_res: any = '';
+      console.log(content);
 
       switch (model) {
         case 'gpt':
