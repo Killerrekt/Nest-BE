@@ -121,3 +121,19 @@ export type InputField = {
   nestedProperties: InputField[];
   enumValues: string[];
 };
+
+export interface Ability {
+  id: string;
+  title: string;
+  type: string;
+  description?: string | null;
+  configured_action?: {
+    description?: string;
+    tool_description?: string;
+  };
+  abilities?: Ability[];
+}
+
+export interface AbilitiesResponse {
+  abilities: Ability[];
+}

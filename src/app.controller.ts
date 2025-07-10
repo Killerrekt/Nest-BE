@@ -14,7 +14,7 @@ import { Response } from 'express';
 import { GoogleGenAI, Type } from '@google/genai';
 import { ReduceAbilityResJson, ReduceTiggerResJson } from './json';
 import { FlowTransformationService } from './flow-transformation.service';
-import { ServiceStep, AgentConfig } from './type';
+import { ServiceStep, AgentConfig, Ability, AbilitiesResponse } from './type';
 import Anthropic from '@anthropic-ai/sdk';
 import { ConvertAgentInstructions } from './agent-role-parser';
 import OpenAI from 'openai';
@@ -36,71 +36,87 @@ export class AppController {
     auth: string,
     org: string,
   ) {
-    const abilityList: Map<string, any> = new Map();
-
-    await axios
-      .get(
-        `http://localhost:3002/projects/${AgentToFlowJSON.project_id}/agents/abilities`,
-        {
-          headers: {
-            organization_uid: org,
-            authtoken: auth,
-          },
-        },
-      )
-      .then((res) => {
-        res.data.abilities.forEach((ele) => {
-          console.log(ele);
-          abilityList.set(ele.id, ele);
-        });
-      });
+    console.log("Starting GetPrompt with project_id:", AgentToFlowJSON.project_id);
+    console.log("Input abilities:", AgentToFlowJSON.abilities);
 
     let transformedAbilities: any[] = [];
     if (AgentToFlowJSON.abilities && Array.isArray(AgentToFlowJSON.abilities)) {
-      await AgentToFlowJSON.abilities.map(
-        async (temp: string) => {
-          const ability = abilityList.get(temp);
-          let nestedAbilities: any[] = [];
+      try {
+        // First fetch all abilities
+        console.log("Fetching abilities list...");
+        const abilitiesResponse = await axios.get<AbilitiesResponse>(
+          `http://localhost:3002/projects/${AgentToFlowJSON.project_id}/agents/abilities`,
+          {
+            headers: {
+              organization_uid: org,
+              authtoken: auth,
+            },
+          }
+        );
+        console.log("Abilities list fetched successfully");
+
+        // Create a map of abilities for quick lookup
+        const abilityList = new Map<string, Ability>(
+          abilitiesResponse.data.abilities.map((ability: Ability) => [ability.id, ability])
+        );
+        console.log("Created ability map with keys:", Array.from(abilityList.keys()));
+
+        // Process each ability ID
+        for (const abilityId of AgentToFlowJSON.abilities) {
+          console.log("Processing ability ID:", abilityId);
+          const ability = abilityList.get(abilityId);
+          
+          if (!ability) {
+            console.log("Warning: No ability found for ID:", abilityId);
+            continue;
+          }
+
+          console.log("Found ability:", ability.title, "with type:", ability.type);
+          let nestedAbilities: Partial<Ability>[] = [];
+
           if (ability.type === 'agent') {
-            await axios
-              .get(
-                `http://localhost:3002/projects/${AgentToFlowJSON.project_id}/agents/${temp}`,
+            try {
+              console.log("Fetching agent details for:", abilityId);
+              const agentResponse = await axios.get<Ability>(
+                `http://localhost:3002/projects/${AgentToFlowJSON.project_id}/agents/${abilityId}`,
                 {
                   headers: {
                     organization_uid: org,
                     authtoken: auth,
                   },
-                },
-              )
-              .then((res) => {
-                res.data.abilities.forEach((ele) => {
-                  nestedAbilities.push({
-                    title: ele.title,
-                    type: ele.type,
-                    description:
-                      ele.configured_action?.description ||
-                      ele.configured_action?.tool_description ||
-                      null,
-                  });
-                });
-              });
+                }
+              );
+              console.log("Agent details fetched successfully for:", abilityId);
+
+              if (agentResponse.data.abilities) {
+                nestedAbilities = agentResponse.data.abilities.map((ele: Ability) => ({
+                  title: ele.title,
+                  type: ele.type,
+                  description: ele.configured_action?.description || ele.configured_action?.tool_description || null,
+                }));
+              }
+            } catch (error) {
+              console.error("Error fetching agent details:", error.message);
+            }
           }
+
           const transformedAbility = {
             title: ability.title,
             type: ability.type,
-            description: ability.description,
+            description: ability.description || ability.configured_action?.description || null,
             fullAgentData: nestedAbilities,
           };
-          console.log(transformedAbility);
-          transformedAbilities.push(transformedAbility);
-          return transformedAbility;
-        },
-      );
 
-      console.log(
-        'Transformed abilities:',
-        JSON.stringify(transformedAbilities, null, 2),
-      );
+          console.log("Transformed ability:", transformedAbility);
+          transformedAbilities.push(transformedAbility);
+        }
+      } catch (error) {
+        console.error("Error in ability transformation:", error.message);
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          error: 'Failed to transform abilities',
+          details: error.message,
+        });
+      }
     } else {
       console.log('No abilities array found or abilities is not an array');
     }
