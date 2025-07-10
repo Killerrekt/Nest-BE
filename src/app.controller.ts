@@ -139,7 +139,7 @@ export class AppController {
     }
 
     const abilitiesJson = { abilities: transformedAbilities };
-    const triggers = ReduceTiggerResJson(AgentToFlowJSON.trigger);
+    const triggers = ReduceTiggerResJson(AgentToFlowJSON.trigger_details);
     const agentDescription = AgentToFlowJSON.description;
 
     const roleParsed = ConvertAgentInstructions(
