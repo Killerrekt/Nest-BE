@@ -126,10 +126,6 @@ export class FlowTransformationService {
       };
       count += 1;
 
-      const check = HandleMap.get(ele.source);
-      HandleMap.set(ele.source, check ? [...check, pos1] : [pos1]);
-      HandleMap.set(ele.target, check ? [...check, pos2] : [pos2]);
-
       edges.push(temp);
     });
 
@@ -179,32 +175,36 @@ export class FlowTransformationService {
       throw new Error('No trigger node found in the flow');
     }
 
-        // Helper function to determine condition priority for sorting
+    // Helper function to determine condition priority for sorting
     const getConditionPriority = (label: string | undefined): number => {
       if (!label) return 2; // No label gets middle priority
-      
+
       const lowerLabel = label.toLowerCase();
-      
+
       // Negative conditions (should come first)
-      if (lowerLabel.includes('no') || 
-          lowerLabel.includes('false') || 
-          lowerLabel.includes('fail') || 
-          lowerLabel.includes('error') || 
-          lowerLabel.includes('reject') ||
-          lowerLabel.includes('denied')) {
+      if (
+        lowerLabel.includes('no') ||
+        lowerLabel.includes('false') ||
+        lowerLabel.includes('fail') ||
+        lowerLabel.includes('error') ||
+        lowerLabel.includes('reject') ||
+        lowerLabel.includes('denied')
+      ) {
         return 0;
       }
-      
+
       // Positive conditions (should come second)
-      if (lowerLabel.includes('yes') || 
-          lowerLabel.includes('true') || 
-          lowerLabel.includes('success') || 
-          lowerLabel.includes('pass') || 
-          lowerLabel.includes('accept') ||
-          lowerLabel.includes('approved')) {
+      if (
+        lowerLabel.includes('yes') ||
+        lowerLabel.includes('true') ||
+        lowerLabel.includes('success') ||
+        lowerLabel.includes('pass') ||
+        lowerLabel.includes('accept') ||
+        lowerLabel.includes('approved')
+      ) {
         return 1;
       }
-      
+
       // Unknown conditions get middle priority
       return 2;
     };
@@ -213,18 +213,18 @@ export class FlowTransformationService {
     const orderedNodes: Node[] = [];
     const visited = new Set<string>();
     const queue: string[] = [startNode.id];
-    
+
     while (queue.length > 0) {
       const nodeId = queue.shift()!;
-      
+
       if (visited.has(nodeId)) continue;
       visited.add(nodeId);
-      
+
       const node = nodeMap.get(nodeId);
       if (!node) continue;
-      
+
       orderedNodes.push(node);
-      
+
       // Get and sort connections in one pass
       const connections = connectionMap.get(nodeId) || [];
       const sortedConnections = connections.sort((a, b) => {
@@ -232,16 +232,16 @@ export class FlowTransformationService {
         const priorityB = getConditionPriority(b.label);
         return priorityA - priorityB;
       });
-      
+
       // Process connections: terminals first, then main flow
       const mainFlowQueue: string[] = [];
-      
+
       for (const conn of sortedConnections) {
         const targetNode = nodeMap.get(conn.targetId);
         if (!targetNode || visited.has(conn.targetId)) continue;
-        
+
         const targetConnections = connectionMap.get(conn.targetId) || [];
-        
+
         // If target has no further connections, it's a terminal node - add immediately
         if (targetConnections.length === 0) {
           visited.add(conn.targetId);
@@ -251,7 +251,7 @@ export class FlowTransformationService {
           mainFlowQueue.push(conn.targetId);
         }
       }
-      
+
       // Add main flow nodes to queue in order
       queue.unshift(...mainFlowQueue);
     }

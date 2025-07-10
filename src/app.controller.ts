@@ -10,7 +10,6 @@ import {
   Res,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { parseAgentInputSchema } from './parse-input-schema';
 import { Response } from 'express';
 import { GoogleGenAI, Type } from '@google/genai';
 import { ReduceAbilityResJson, ReduceTiggerResJson } from './json';
@@ -52,42 +51,54 @@ export class AppController {
       .then((res) => {
         res.data.abilities.forEach((ele) => {
           console.log(ele);
-          abilityList.set(ele.title, ele);
+          abilityList.set(ele.id, ele);
         });
       });
 
     let transformedAbilities: any[] = [];
     if (AgentToFlowJSON.abilities && Array.isArray(AgentToFlowJSON.abilities)) {
-      transformedAbilities = AgentToFlowJSON.abilities.map((temp: string) => {
-        const ability = abilityList.get(temp);
-        let nestedAbilities = [];
-        if (
-          ability.type === 'agent' &&
-          ability.fullAgentData &&
-          ability.fullAgentData.abilities
-        ) {
-          nestedAbilities = ability.fullAgentData.abilities.map((ele: any) => ({
-            title: ele.title,
-            type: ele.type,
+      transformedAbilities = AgentToFlowJSON.abilities.map(
+        async (temp: string) => {
+          const ability = abilityList.get(temp);
+          let nestedAbilities: any[] = [];
+          if (ability.type === 'agent') {
+            await axios
+              .get(
+                `http://localhost:3002/projects/${AgentToFlowJSON.project_id}/agents/${temp}`,
+                {
+                  headers: {
+                    organization_uid: org,
+                    authtoken: auth,
+                  },
+                },
+              )
+              .then((res) => {
+                res.data.abilities.forEach((ele) => {
+                  nestedAbilities.push({
+                    title: ele.title,
+                    type: ele.type,
+                    description:
+                      ele.configured_action?.description ||
+                      ele.configured_action?.tool_description ||
+                      null,
+                  });
+                });
+              });
+          }
+          const transformedAbility = {
+            title: ability.title,
+            type: ability.type,
             description:
-              ele.configured_action?.description ||
-              ele.configured_action?.tool_description ||
-              null,
-          }));
-        }
-        const transformedAbility = {
-          title: ability.title,
-          type: ability.type,
-          description:
-            ability.type === 'agent' && ability.fullAgentData
-              ? ability.fullAgentData.description
-              : ability.configured_action?.description ||
-                ability.configured_action?.tool_description ||
-                null,
-          fullAgentData: nestedAbilities,
-        };
-        return transformedAbility;
-      });
+              ability.type === 'agent' && ability.fullAgentData
+                ? ability.fullAgentData.description
+                : ability.configured_action?.description ||
+                  ability.configured_action?.tool_description ||
+                  null,
+            fullAgentData: nestedAbilities,
+          };
+          return transformedAbility;
+        },
+      );
 
       console.log(
         'Transformed abilities:',
@@ -205,7 +216,7 @@ export class AppController {
   @Post()
   async generateWorkflow(
     @Body() AgentToFlowJSON: any,
-    @Headers('authToken') authToken: string,
+    @Headers('authtoken') authToken: string,
     @Headers('organization_uid') orgId: string,
     @Res()
     res: Response,
