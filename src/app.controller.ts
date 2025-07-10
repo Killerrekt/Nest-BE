@@ -57,7 +57,7 @@ export class AppController {
 
     let transformedAbilities: any[] = [];
     if (AgentToFlowJSON.abilities && Array.isArray(AgentToFlowJSON.abilities)) {
-      transformedAbilities = AgentToFlowJSON.abilities.map(
+      await AgentToFlowJSON.abilities.map(
         async (temp: string) => {
           const ability = abilityList.get(temp);
           let nestedAbilities: any[] = [];
@@ -88,14 +88,11 @@ export class AppController {
           const transformedAbility = {
             title: ability.title,
             type: ability.type,
-            description:
-              ability.type === 'agent' && ability.fullAgentData
-                ? ability.fullAgentData.description
-                : ability.configured_action?.description ||
-                  ability.configured_action?.tool_description ||
-                  null,
+            description: ability.description,
             fullAgentData: nestedAbilities,
           };
+          console.log(transformedAbility);
+          transformedAbilities.push(transformedAbility);
           return transformedAbility;
         },
       );
